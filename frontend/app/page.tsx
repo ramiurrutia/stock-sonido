@@ -2,6 +2,7 @@
 import axios from "axios";
 import Html5QrcodePlugin from './components/qrScanner';
 import { useState } from "react";
+import Image from "next/image";
 
 interface Item {
   id: number;
@@ -13,32 +14,37 @@ interface Item {
   imageUrl: string | null;
 }
 
+function OnScan(params: string) {
+  const [item, setItem] = useState<Item | null>(null);
+
+  return (<>
+    {item ? (
+      <div>
+        <h2>Item Details</h2>
+        <p><strong>Name:</strong> {item.name}</p>
+        <p><strong>Category:</strong> {item.category}</p>
+        <p><strong>Status:</strong> {item.status}</p>
+        <p><strong>Notes:</strong> {item.notes}</p>
+        {item.imageUrl && <Image src={item.imageUrl} alt={item.name} />}
+      </div>) : (<p>Loading item data...</p>
+    )}
+  </>);
+}
+
 const onNewScanResult = async (decodedText: string) => {
   try {
-    setLoading(true);
-    setError(null);
-
     const res = await axios.post("http://localhost:4000/scan", {
-      code
+      code: decodedText
     });
-
-    setItem(res.data.item);
+    
   } catch (err) {
-    setItem(null);
-    setError("Item no encontrado");
+    console.error("Error sending scan result:", err);
   } finally {
-    setLoading(false);
   }
 };
 
 
 export default function Home() {
-
-  const [item, setItem] = useState<Item | null>(null);
-const [loading, setLoading] = useState(false);
-const [error, setError] = useState<string | null>(null);
-
-
   return (
     <main>
       <h1>Welcome to the Stock Sonido App</h1>
