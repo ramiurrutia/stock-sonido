@@ -4,33 +4,39 @@ import { pool } from "../db.js";
 
 const router = express.Router();
 
-router.get("/items", async (req, res) => {
+router.put("/items/:code/status", async (req, res) => {
+  const { status } = req.body;
+  const code = req.params.code;
   try {
-    const { rows } = await pool.query("SELECT * FROM items");
-    res.json(rows);
+    const { rows } = await pool.query(
+      "UPDATE items SET status = $1 WHERE code = $2",
+      [status, code]
+    );
+    res.json("El estado se cambió correctamente a: " + status)
   } catch (error) {
-    console.error("Error fetching items:", error);
-    res.status(500).json({ error: "Error fetching items" });
+    console.error("Error al cambiar de estado:", error);
+    res.status(500).json({ error: "Error en el servidor" });
   }
 });
 
-router.post("/scan", async (req, res) => {
-  const { code } = req.body;
-
-  console.log(req.body);
+router.get("/items/:code", async (req, res) => {
+  const code = req.params.code;
   try {
-    const { rows } = await pool.query("SELECT * FROM items WHERE code = $1", [
-      code,
-    ]);
-
-    if (rows.length === 0) {
-      return res.status(404).json({ error: "Item not found" });
-    }
-
-    res.json(rows[0]);
+    const { rows } = await pool.query("SELECT * FROM items WHERE code = $1", [code]);
+    res.json(rows[0] || null);
   } catch (error) {
-    console.error("Error scanning item:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error:", error);
+    res.status(500).json(error);
+  }
+});
+
+router.get("/items", async (req, res) => {
+  try {
+    const { rows } = await pool.query("SELECT * FROM items");
+    res.send(rows)
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Error" });
   }
 });
 

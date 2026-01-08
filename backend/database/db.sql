@@ -21,7 +21,7 @@ CREATE TABLE items (
             'Guardado',
             'En uso',
             'Backup',
-            'Extraviado/Dado de baja'
+            'Baja'
         )
     ),
     notes TEXT,

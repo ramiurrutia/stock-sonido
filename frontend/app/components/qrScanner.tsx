@@ -2,11 +2,11 @@
 import { Html5QrcodeResult, Html5QrcodeScanner, Html5QrcodeCameraScanConfig } from 'html5-qrcode';
 import { useEffect } from 'react';
 
-const qrcodeRegionId = "html5qr-code-full-region";
+const qrcodeRegionId = "reader";
 
 interface Html5QrcodeConfig {
     fps?: number;
-    qrbox?: number | {width: number, height: number};
+    qrbox?: number | { width: number, height: number };
     aspectRatio?: number;
     disableFlip?: boolean;
 }
@@ -19,15 +19,15 @@ interface Html5QrcodePluginProps extends Html5QrcodeConfig {
 
 // Creates the configuration object for Html5QrcodeScanner.
 const createConfig = (props: Html5QrcodePluginProps) => {
-    const config = { } as Html5QrcodeCameraScanConfig;
+    const config = {} as Html5QrcodeCameraScanConfig;
     if (props.fps) {
-        config.fps = 30;
+        config.fps = props.fps;
     }
     if (props.qrbox) {
-        config.qrbox = 600;
+        config.qrbox = props.qrbox;
     }
     if (props.aspectRatio) {
-        config.aspectRatio = 1.0;
+        config.aspectRatio = props.aspectRatio;
     }
     if (props.disableFlip !== undefined) {
         config.disableFlip = props.disableFlip;
@@ -47,7 +47,6 @@ const Html5QrcodePlugin = (props: Html5QrcodePluginProps) => {
         }
         const html5QrcodeScanner = new Html5QrcodeScanner(qrcodeRegionId, config, verbose);
         html5QrcodeScanner.render(props.qrCodeSuccessCallback, props.qrCodeErrorCallback);
-
         // cleanup function when component will unmount
         return () => {
             html5QrcodeScanner.clear().catch(error => {
@@ -57,7 +56,13 @@ const Html5QrcodePlugin = (props: Html5QrcodePluginProps) => {
     }, [props]);
 
     return (
-        <div id={qrcodeRegionId} />
+  <div className="scanner-container">
+    <div id={qrcodeRegionId} />
+
+    <div className="qr-overlay">
+      <div className="qr-box" />
+    </div>
+  </div>
     );
 };
 
