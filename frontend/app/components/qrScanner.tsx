@@ -56,13 +56,9 @@ const Html5QrcodePlugin = (props: Html5QrcodePluginProps) => {
     }, [props]);
 
     return (
-  <div className="scanner-container">
-    <div id={qrcodeRegionId} />
-
-    <div className="qr-overlay">
-      <div className="qr-box" />
-    </div>
-  </div>
+        <div className="scanner-container">
+            <div id={qrcodeRegionId} />
+        </div>
     );
 };
 
