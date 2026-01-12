@@ -28,9 +28,7 @@ export default function Home() {
           withReactContent(Swal).fire({
             title: 'Scan',
             html: <QrScanner
-            fps={50} 
-            qrbox={{ width: 250, height: 250 }}
-              qrCodeSuccessCallback={(decodedText) => {
+              onScan={(decodedText) => {
                 onNewScanResult(decodedText);
                 setTimeout(() => {
                   Swal.close();
