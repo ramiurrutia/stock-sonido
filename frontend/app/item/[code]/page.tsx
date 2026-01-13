@@ -5,7 +5,7 @@ import ItemsActions from "./itemsActions"
 
 export default async function ItemPage({ params, }: { params: Promise<{ code: string }>; }) {
 
-    const code = (await params).code;
+    const { code } = await params;
 
     const itemData = await axios.get(`http://localhost:4000/items/${code}`);
 

@@ -1,4 +1,5 @@
-CREATE TABLE items (
+CREATE TABLE items
+(
     id SERIAL PRIMARY KEY,
     image_url VARCHAR(255),
     code VARCHAR(20) NOT NULL UNIQUE,
@@ -28,7 +29,8 @@ CREATE TABLE items (
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE anvil_contents (
+CREATE TABLE anvil_contents
+(
     id SERIAL PRIMARY KEY,
 
     anvil_id INTEGER NOT NULL,
@@ -55,7 +57,8 @@ CREATE TABLE anvil_contents (
         CHECK (anvil_id <> item_id)
 );
 
-CREATE TABLE movements (
+CREATE TABLE movements
+(
     id SERIAL PRIMARY KEY,
 
     item_id INTEGER NOT NULL,
@@ -94,12 +97,14 @@ CREATE TABLE movements (
 );
 
 
-INSERT INTO items (code, name, category, status, notes) VALUES
-('CABL-0001', 'Cable CANON (XLR) | 14 mts.', 'Cable', 'Guardado', 'Cable de audio XLR de 14 metros de longitud. De consola a micrófono.'),
-('CONS-0001', 'Consola Qu16 | Allen & Heath', 'Consola', 'Guardado', 'Consola de mezcla digital de 16 canales.'),
-('MICR-0001', 'Micrófono Shure | SM-58', 'Micrófono', 'Guardado', 'Micrófono dinámico para voces.'),
-('PARL-0001', 'Monitor Peavey (Pasivo) | PV-12M', 'Parlante', 'Guardado', '500W'),
-('POTE-0001', 'Potencia Crown | XLI 1500', 'Potencia', 'Guardado', '900W (4 ohmios p/canal).'),
-('TRIP-0001', 'Trípode de parlante | 2,5m', 'Trípode', 'Guardado', ''),
-('ELEC-0001', 'Tablero electrico', 'Electricidad', 'Guardado', '220V. Tablero con 17 salidas, 10 AMP, 1 ficha Scame 220V x 32 AMP.'),
-('ANVI-0001', 'Anvil | Cables', 'Anvil', 'Guardado', 'Anvil con 29 cables de audio y 4 cables eléctricos.');
+INSERT INTO items
+    (code, name, category, status, notes)
+VALUES
+    ('CABL-0001', 'Cable CANON (XLR) | 14 mts.', 'Cable', 'Guardado', 'Cable de audio XLR de 14 metros de longitud. De consola a micrófono.'),
+    ('CONS-0001', 'Consola Qu16 | Allen & Heath', 'Consola', 'Guardado', 'Consola de mezcla digital de 16 canales.'),
+    ('MICR-0001', 'Micrófono Shure | SM-58', 'Micrófono', 'Guardado', 'Micrófono dinámico para voces.'),
+    ('PARL-0001', 'Monitor Peavey (Pasivo) | PV-12M', 'Parlante', 'Guardado', '500W'),
+    ('POTE-0001', 'Potencia Crown | XLI 1500', 'Potencia', 'Guardado', '900W (4 ohmios p/canal).'),
+    ('TRIP-0001', 'Trípode de parlante | 2,5m', 'Trípode', 'Guardado', ''),
+    ('ELEC-0001', 'Tablero electrico', 'Electricidad', 'Guardado', '220V. Tablero con 17 salidas, 10 AMP, 1 ficha Scame 220V x 32 AMP.'),
+    ('ANVI-0001', 'Anvil | Cables', 'Anvil', 'Guardado', 'Anvil con 29 cables de audio y 4 cables eléctricos.');

@@ -3,7 +3,7 @@
 body {
   background: oklch(12.9% 0.042 264.695);
   color: #e5e7eb;
-  font-family: Montserrat, sans-serif;
+  font-family: var(--font-montserrat), system-ui, sans-serif;
 }
 
 .scanner-container {

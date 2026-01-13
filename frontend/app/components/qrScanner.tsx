@@ -18,11 +18,11 @@ export default function QrScanner({ onScan }: { onScan: (text: string) => void }
         onScan(decodedText);
         html5QrCode.stop();
       },
-      () => {}
+      () => { }
     );
 
     return () => {
-      html5QrCode.stop().catch(() => {});
+      html5QrCode.stop().catch(() => { });
     };
   }, [onScan]);
 
