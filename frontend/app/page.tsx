@@ -1,6 +1,7 @@
-"use client";
+"use client"
 
 import QrScanner from "./components/qrScanner";
+import Button from "./components/button"
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2"
 import withReactContent from "sweetalert2-react-content";
@@ -16,14 +17,16 @@ export default function Home() {
       toast: true,
       animation: false
     })
-    router.push(`/item/${decodedText}`);
+    try {router.push(`/item/${decodedText}`)}
+    catch(error){console.error(error)};
   };
 
   return (
     <main>
       <h1>Welcome to the Stock Sonido App</h1>
 
-      <button
+      <Button
+      textButton="Escanear"
         onClick={() => {
           withReactContent(Swal).fire({
             title: 'Scan',
@@ -40,10 +43,7 @@ export default function Home() {
             theme: "dark",
           })
         }}
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-      >
-        Scan Item
-      </button>
+      />
     </main>
   );
 }

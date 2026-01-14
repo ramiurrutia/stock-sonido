@@ -9,9 +9,9 @@ export function StatusButton({ currentStatus, newButtonStatus, onClick }: { curr
     let styleButton = "";
 
     if (isActive) {
-        styleButton = "text-slate-700 bg-slate-900"
+        styleButton = "text-zinc-700 bg-zinc-900"
     } else {
-        styleButton = "text-slate-200 bg-slate-900 hover:bg-slate-50/10 active:bg-slate-100/15"
+        styleButton = "text-zinc-200 bg-linear-to-tl from-zinc-900 to-zinc-800 hover:bg-zinc-50/10 active:bg-zinc-100/15 ring ring-zinc-600"
     }
 
     switch (newButtonStatus) {

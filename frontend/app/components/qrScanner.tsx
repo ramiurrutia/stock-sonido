@@ -12,7 +12,8 @@ export default function QrScanner({ onScan }: { onScan: (text: string) => void }
       {
         fps: 40,
         qrbox: { width: 250, height: 250 },
-        aspectRatio: 1.777778
+        aspectRatio: 1.333334,
+        disableFlip: true
       },
       (decodedText) => {
         onScan(decodedText);
