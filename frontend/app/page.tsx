@@ -1,49 +1,33 @@
 "use client"
 
-import QrScanner from "./components/qrScanner";
 import Button from "./components/button"
+import Header from "./components/navBar";
 import { useRouter } from "next/navigation";
-import Swal from "sweetalert2"
-import withReactContent from "sweetalert2-react-content";
 
 export default function Home() {
-  const router = useRouter();
 
-  const onNewScanResult = (decodedText: string) => {
-    Swal.fire({
-      text: `Buscando ${decodedText}`,
-      theme: "dark",
-      showConfirmButton: false,
-      toast: true,
-      animation: false
-    })
-    try {router.push(`/item/${decodedText}`)}
-    catch(error){console.error(error)};
-  };
+
+  const router = useRouter()
 
   return (
-    <main>
-      <h1>Welcome to the Stock Sonido App</h1>
 
-      <Button
-      textButton="Escanear"
-        onClick={() => {
-          withReactContent(Swal).fire({
-            title: 'Scan',
-            html: <QrScanner
-              onScan={(decodedText) => {
-                onNewScanResult(decodedText);
-                setTimeout(() => {
-                  Swal.close();
-                }, 1000)
-              }}
-            />,
-            showConfirmButton: false,
-            showCancelButton: false,
-            theme: "dark",
-          })
-        }}
-      />
+    <main className="flex flex-col items-center justify-center p-6 h-screen max-w-180">
+      <Header />
+
+      <div className="flex flex-col items-center pb-4">
+        <h1 className="text-center text-4xl font-semibold text-heading text-transparent bg-clip-text bg-linear-to-br to-zinc-300 from-zinc-200 leading-7">Audio</h1>
+        <span className="text-md/tight font-light">Bahía Blanca</span>
+      </div>
+      <div className="flex flex-row gap-4">
+        <Button
+          textButton="Escanear"
+          onClick={() => { router.push(`/scan`)}}
+        />
+        <Button
+          textButton="Anviles"
+          onClick={() => { router.push(`/anvil`)}} />
+      </div>
+
     </main>
   );
 }

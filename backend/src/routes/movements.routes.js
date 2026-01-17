@@ -1,6 +1,5 @@
-// movements.routes.js
 import express from "express";
-import { pool } from "../db.js"; // tu conexión a PostgreSQL
+import { pool } from "../db.js";
 
 const router = express.Router();
 

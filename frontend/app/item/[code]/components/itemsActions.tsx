@@ -3,7 +3,7 @@
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2"
-import { StatusButton } from "./components/statusButton";
+import { StatusButton } from "./statusButton";
 
 export default function ItemActions({
     code,

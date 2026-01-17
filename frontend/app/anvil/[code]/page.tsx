@@ -1,7 +1,5 @@
 import axios from "axios";
 import Image from "next/image";
-import { StatusBadge } from "./components/StatusBadge";
-import ItemsActions from "./components/itemsActions"
 import BackButton from "@/app/components/backButton";
 import NavBar from '@/app/components/navBar'
 
@@ -9,7 +7,7 @@ export default async function ItemPage({ params, }: { params: Promise<{ code: st
 
     const { code } = await params;
 
-    const itemData = await axios.get(`http://localhost:4000/items/${code}`);
+    const itemData = await axios.get(`http://localhost:4000/anvils/${code}`);
 
     const data = itemData.data;
 
@@ -26,12 +24,10 @@ export default async function ItemPage({ params, }: { params: Promise<{ code: st
                 <h3 className="text-sm text-zinc-400 mt-3 mb-1">Categoria</h3>
                 <p className="text-xl text-zinc-200">{data.category}</p>
                 <h3 className="text-sm text-zinc-400 mt-3 mb-1">Estado</h3>
-                <p><StatusBadge status={data.status} /></p>
                 <h3 className="text-sm text-zinc-400 mt-3 mb-1">Notas</h3>
                 <p className="text-zinc-200">{data.notes}</p>
                 
             </div>
-            <ItemsActions code={data.code} currentStatus={data.status} />
         </main>
     );
 } 
