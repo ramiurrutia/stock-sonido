@@ -16,5 +16,5 @@ export default function StatusBadge({ status }: { status: string }) {
             colorBadge = "text-red-300 bg-red-600/15 ring-red-400/60"
             break;
     }
-    return (<span className={`inline-flex items-center px-1.5 py-0.5 ring-1 ring-inset text-sm font-medium rounded ${colorBadge}`}>{(status)}</span>)
+    return (<span className={`inline-flex items-center px-1.5 py-0.5 ring-1 ring-inset text-[12px] font-medium rounded ${colorBadge}`}>{(status)}</span>)
 }

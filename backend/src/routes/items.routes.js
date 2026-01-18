@@ -74,13 +74,57 @@ router.get("/items/search", async (req, res) => {
 router.get("/items/:code", async (req, res) => {
   const code = req.params.code;
   try {
-    const { rows } = await pool.query("SELECT * FROM items WHERE code = $1", [
-      code,
-    ]);
-    res.json(rows[0] || null);
+    const { rows } = await pool.query("SELECT * FROM items WHERE code = $1", [code]);
+    
+    if (!rows[0]) {
+      return res.status(404).json({ error: "Item not found" });
+    }
+
+    const item = rows[0];
+
+    // Verificar si está en algún anvil
+    const anvilResult = await pool.query(
+      `SELECT i.id, i.code, i.name
+       FROM anvil_contents ac
+       JOIN items i ON ac.anvil_id = i.id
+       WHERE ac.item_id = $1`,
+      [item.id]
+    );
+
+    res.json({
+      ...item,
+      anvil: anvilResult.rows[0] || null
+    });
   } catch (error) {
     console.error("Error:", error);
-    res.status(500).json(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.put("/items/:code", async (req, res) => {
+  const { code } = req.params;
+  const { notes } = req.body;
+  
+  try {
+    const { rows } = await pool.query(
+      "UPDATE items SET notes = $1 WHERE code = $2 RETURNING *",
+      [notes, code]
+    );
+
+    if (!rows[0]) {
+      return res.status(404).json({ error: "Item not found" });
+    }
+
+    await pool.query(
+      `INSERT INTO movements (item_id, action, new_status)
+       VALUES ($1, 'manual_update', $2)`,
+      [rows[0].id, rows[0].status]
+    );
+
+    res.json(rows[0]);
+  } catch (error) {
+    console.error("Error updating item:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
