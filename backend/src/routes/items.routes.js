@@ -6,21 +6,39 @@ const router = express.Router();
 router.put("/items/:code/status", async (req, res) => {
   const { status } = req.body;
   const code = req.params.code;
+  
   try {
-    const { rows } = await pool.query(
-      "UPDATE items SET status = $1 WHERE code = $2",
-      [status, code],
+    // Primero obtén el item actual para tener el id y el status anterior
+    const { rows: currentItem } = await pool.query(
+      "SELECT id, status FROM items WHERE code = $1",
+      [code]
     );
 
+    if (!currentItem.length) {
+      return res.status(404).json({ error: "Item no encontrado" });
+    }
+
+    const itemId = currentItem[0].id;
+    const oldStatus = currentItem[0].status;
+
+    // Actualiza el estado
     await pool.query(
-      `
-  INSERT INTO movements (item_id, action, previous_status, new_status, user_name)
-  VALUES ($1, 'status_change', $2, $3, $4)
-`,
-      [itemId, oldStatus, newStatus, userName],
+      "UPDATE items SET status = $1 WHERE code = $2",
+      [status, code]
     );
 
-    res.json("El estado se cambió correctamente a: " + status);
+    // Registra el movimiento
+    await pool.query(
+      `INSERT INTO movements (item_id, action, previous_status, new_status, user_name)
+       VALUES ($1, 'status_change', $2, $3, $4)`,
+      [itemId, oldStatus, status, null] // userName como null por ahora
+    );
+
+    res.json({ 
+      success: true, 
+      message: "El estado se cambió correctamente a: " + status 
+    });
+    
   } catch (error) {
     console.error("Error al cambiar de estado:", error);
     res.status(500).json({ error: "Error en el servidor" });

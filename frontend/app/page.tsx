@@ -11,7 +11,7 @@ export default function Home() {
 
   return (
 
-    <main className="flex flex-col items-center justify-center p-6 h-screen max-w-180">
+    <main className="flex flex-col items-center justify-center p-6 h-screen w-screen">
       <Header />
 
       <div className="flex flex-col items-center pb-4">

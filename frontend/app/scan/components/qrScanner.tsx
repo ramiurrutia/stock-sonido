@@ -32,7 +32,8 @@ export default function QrScanner() {
           {
             fps: 40,
             qrbox: 250,
-            aspectRatio: 1.0
+            aspectRatio: 1.0,
+            disableFlip: false
           },
           async (decodedText) => {
             if (!mounted || hasScannedRef.current) return;

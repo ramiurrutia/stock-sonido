@@ -4,14 +4,14 @@ import { pool } from "../db.js";
 const router = express.Router();
 
 // GET: Obtener anvil con todos sus items
-router.get("anvils/:anvilId", async (req, res) => {
+router.get("/anvils/:code", async (req, res) => {
   try {
-    const { anvilId } = req.params;
+    const { code } = req.params;
 
     // Verificar que sea un anvil válido
     const anvilCheck = await pool.query(
-      `SELECT * FROM items WHERE id = $1 AND category = 'Anvil'`,
-      [anvilId],
+      `SELECT * FROM items WHERE code = $1 AND category = 'Anvil'`,
+      [code],
     );
 
     if (anvilCheck.rows.length === 0) {
@@ -37,7 +37,7 @@ router.get("anvils/:anvilId", async (req, res) => {
       JOIN items i ON ac.item_id = i.id
       WHERE ac.anvil_id = $1
       ORDER BY ac.created_at DESC`,
-      [anvilId],
+      [anvil.id],
     );
 
     // Respuesta estructurada
@@ -60,7 +60,7 @@ router.get("anvils/:anvilId", async (req, res) => {
 });
 
 // POST: Agregar item a un anvil
-router.post("anvils/", async (req, res) => {
+router.post("/anvils/add", async (req, res) => {
   try {
     const { anvil_id, item_id, notes } = req.body;
 
@@ -119,7 +119,7 @@ router.post("anvils/", async (req, res) => {
 });
 
 // DELETE: Quitar item de un anvil
-router.delete("anvils/:anvilId/items/:itemId", async (req, res) => {
+router.delete("/anvils/:anvilId/items/:itemId", async (req, res) => {
   try {
     const { anvilId, itemId } = req.params;
 
@@ -153,16 +153,29 @@ router.delete("anvils/:anvilId/items/:itemId", async (req, res) => {
   }
 });
 
+// GET: Obtener todos los anvils
 router.get("/anvils", async (req, res) => {
   try {
-    const result = await pool.query(
-      `SELECT * FROM items WHERE category = 'Anvil'`
+    const { rows } = await pool.query(
+      `SELECT 
+        id,
+        code,
+        name,
+        status,
+        image_url,
+        notes,
+        created_at,
+        (SELECT COUNT(*) FROM anvil_contents WHERE anvil_id = items.id) as items_count
+      FROM items 
+      WHERE category = 'Anvil'
+      ORDER BY created_at DESC`
     );
-    
-    res.json(result.rows);
+
+    res.json(rows);
   } catch (error) {
     console.error("Error fetching anvils:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 export default router;

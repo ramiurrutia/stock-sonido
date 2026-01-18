@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 import { useRouter } from "next/navigation";
 import { Combobox } from '@headlessui/react'
-import { StatusBadge } from "@/app/item/[code]/components/StatusBadge";
+import StatusBadge from "@/app/components/ui/StatusBadge";
 
 interface Item {
     id: string;
@@ -46,7 +46,10 @@ export default function SearchBar() {
         <Combobox
             onChange={(item: Item | null) => {
                 if (item) {
-                    router.push(`/item/${item.code}`);
+                    const route = item.code.startsWith('ANVI-')
+                        ? `/anvil/${item.code}`
+                        : `/item/${item.code}`;
+                    router.push(route);
                 }
             }}
         >
@@ -72,7 +75,7 @@ export default function SearchBar() {
                                 <div className="flex flex-col">
                                     <span className="font-medium">{item.name}</span>
                                     <span className="text-sm text-zinc-400">{item.code}</span>
-                                    
+
                                 </div>
                                 <StatusBadge status={item.status} />
                             </Combobox.Option>

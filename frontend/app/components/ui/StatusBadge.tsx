@@ -1,4 +1,4 @@
-export function StatusBadge({ status }: { status: string }) {
+export default function StatusBadge({ status }: { status: string }) {
 
     let colorBadge = ""
 
@@ -9,7 +9,7 @@ export function StatusBadge({ status }: { status: string }) {
         case "En uso":
             colorBadge = "text-amber-200 bg-amber-300/15 ring-amber-300/80"
             break;
-        case "Backup":
+        case "Enviado":
             colorBadge = "text-sky-200 bg-sky-600/15 ring-sky-600/80"
             break;
         case "Baja":

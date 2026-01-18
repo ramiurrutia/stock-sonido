@@ -6,6 +6,5 @@ export const pool = new pg.Pool({
   password: "2005",
   database: "sonidostock",
   port: 5432,
-  client_encoding: "utf8",
 });
 

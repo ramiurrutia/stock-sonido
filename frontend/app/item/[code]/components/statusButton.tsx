@@ -1,5 +1,5 @@
 "use client";
-import { BsArrowRepeat, BsBoxArrowInDown, BsBoxArrowUp, BsArchive } from "react-icons/bs";
+import { BsSend, BsBoxArrowInDown, BsBoxArrowUp, BsArchive } from "react-icons/bs";
 import Swal from "sweetalert2";
 
 export function StatusButton({ currentStatus, newButtonStatus, onClick }: { currentStatus: string, newButtonStatus: string, onClick: () => void }) {
@@ -21,8 +21,8 @@ export function StatusButton({ currentStatus, newButtonStatus, onClick }: { curr
         case "En uso":
             statusSVG = <BsBoxArrowUp className="size-10 mb-2" />
             break;
-        case "Backup":
-            statusSVG = <BsArrowRepeat className="size-10 mb-2" />
+        case "Enviado":
+            statusSVG = <BsSend className="size-10 mb-2" />
             break;
         case "Baja":
             statusSVG = <BsArchive className="size-10 mb-2" />
@@ -44,7 +44,7 @@ export function StatusButton({ currentStatus, newButtonStatus, onClick }: { curr
         } else {
             onClick()
         }
-    }} className={`text-sm min-h-32 min-w-32 flex flex-col items-center justify-center rounded-lg transition-all ${styleButton}`}>
+    }} className={`text-sm min-h-22 min-w-22 flex flex-col items-center justify-center rounded-lg transition-all ${styleButton}`}>
         {statusSVG}{newButtonStatus}
     </button>
 }

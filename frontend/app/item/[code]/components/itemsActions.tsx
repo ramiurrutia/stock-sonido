@@ -49,11 +49,11 @@ export default function ItemActions({
     };
 
     return (<>
-        <h2 className="text-lg font-light pb-2">Cambiar estado</h2>
+        <h2 className="text-sm font-light pb-2 text-center">Cambiar estado</h2>
         <div className="grid grid-cols-2 gap-4 w-full">
             <StatusButton currentStatus={currentStatus} newButtonStatus="Guardado" onClick={() => (changeStatus("Guardado"))}/>
             <StatusButton currentStatus={currentStatus} newButtonStatus="En uso" onClick={() => (changeStatus("En uso"))}/>
-            <StatusButton currentStatus={currentStatus} newButtonStatus="Backup" onClick={() => (changeStatus("Backup"))}/>
+            <StatusButton currentStatus={currentStatus} newButtonStatus="Enviado" onClick={() => (changeStatus("Enviado"))}/>
             <StatusButton currentStatus={currentStatus} newButtonStatus="Baja" onClick={() => (changeStatus("Baja"))}/>
         </div>
     </>
