@@ -9,7 +9,7 @@ export default function BackButton() {
 
 return <button
     onClick={() => router.push('/')}
-    className="text-white m-6 flex justify-center items-center text-2xl top-0 fixed left-0 z-50"
+    className="text-white m-4 flex justify-center items-center text-2xl top-0 fixed left-0 z-50"
   >
     <BsArrowLeft />
   </button>

@@ -14,7 +14,7 @@ export default async function ItemPage({ params, }: { params: Promise<{ code: st
     const data = itemData.data;
 
     return (
-        <main className="flex flex-col items-center justify-center p-6 h-screen w-screen">
+        <main className="flex flex-col items-center justify-center p-4 h-screen w-screen">
             <BackButton />
             <NavBar />
             <div className="">
@@ -28,7 +28,7 @@ export default async function ItemPage({ params, }: { params: Promise<{ code: st
                     <p className="text-zinc-200">{data.category}</p>
                     <h3 className="text-sm text-zinc-400 mt-2">Estado</h3>
                     <p><StatusBadge status={data.status} /></p>
-                    {data.anvil.notes && (
+                    {data.notes && (
                         <div>
                             <h3 className="text-sm text-zinc-400 mt-2">Notas</h3>
                             <p className="text-zinc-200">{data.notes}</p>

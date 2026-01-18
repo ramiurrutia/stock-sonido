@@ -144,8 +144,9 @@ export default function AnvilPage() {
   if (!data) return <p>Anvil no encontrado</p>;
 
   return (
-    <div className="p-4">
-      <div className="flex flex-col rounded-lg p-4 bg-linear-to-tl from-zinc-900 to-zinc-800 ring ring-zinc-600 mb-4">
+    <div className="flex flex-col p-4 items-center justify-center w-screen h-screen">
+      <div className="rounded-lg p-4 bg-linear-to-tl from-zinc-900 to-zinc-800 ring ring-zinc-600 transition-all">
+      <div className="flex flex-col  mb-4">
         <div className="text-center border-b border-zinc-400/80 p-2 mb-1">
           <h2 className="font-bold text-lg text-zinc-200">{data.anvil.name}</h2>
           <p className="font-medium text-sm text-zinc-400 tracking-wider">{data.anvil.code}</p>
@@ -173,7 +174,7 @@ export default function AnvilPage() {
         >
           <div className="relative">
             <Combobox.Input
-              className="rounded-lg bg-linear-to-r from-zinc-900 to-zinc-800 ring-1  ring-zinc-700 focus:ring-zinc-500 w-full py-2 text-center text-sm/6 text-zinc-200 focus:not-data-focus:outline-none data-focus:outline-none transition-all"
+              className="rounded-lg bg-zinc-900 focus:bg-zinc-800 ring-zinc-700 ring-1 focus:ring-zinc-500 w-full py-2 text-center text-sm/6 text-zinc-200 focus:not-data-focus:outline-none data-focus:outline-none transition-all"
               placeholder="Buscar item para agregar..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -225,6 +226,7 @@ export default function AnvilPage() {
             </button>
           </div>
         ))}
+      </div>
       </div>
     </div>
   );
