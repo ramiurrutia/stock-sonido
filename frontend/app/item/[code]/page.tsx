@@ -18,21 +18,24 @@ export default async function ItemPage({ params, }: { params: Promise<{ code: st
             <BackButton />
             <NavBar />
             <div className="">
-            <div className="flex flex-col rounded-lg p-4 bg-linear-to-tl from-zinc-900 to-zinc-800 ring ring-zinc-600 mb-4">
-                {data.imageUrl ? <Image src={data.imageUrl} alt={data.name} className="rounded-lg" /> : <p className="text-center">Imagen no encontrada</p>}
-                <div className="text-center border-b border-zinc-400/80 p-2 mb-1">
-                    <h2 className="font-bold text-lg text-zinc-200">{data.name}</h2>
-                    <p className="font-medium text-sm text-zinc-400 tracking-wider">{data.code}</p>
+                <div className="flex flex-col rounded-lg p-4 bg-linear-to-tl from-zinc-900 to-zinc-800 ring ring-zinc-600 mb-4">
+                    {data.imageUrl ? <Image src={data.imageUrl} alt={data.name} className="rounded-lg" /> : <p className="text-center">Imagen no encontrada</p>}
+                    <div className="text-center border-b border-zinc-400/80 p-2 mb-1">
+                        <h2 className="font-bold text-lg text-zinc-200">{data.name}</h2>
+                        <p className="font-medium text-sm text-zinc-400 tracking-wider">{data.code}</p>
+                    </div>
+                    <h3 className="text-sm text-zinc-400 mt-2">Categoria</h3>
+                    <p className="text-zinc-200">{data.category}</p>
+                    <h3 className="text-sm text-zinc-400 mt-2">Estado</h3>
+                    <p><StatusBadge status={data.status} /></p>
+                    {data.anvil.notes && (
+                        <div>
+                            <h3 className="text-sm text-zinc-400 mt-2">Notas</h3>
+                            <p className="text-zinc-200">{data.notes}</p>
+                        </div>
+                    )}
                 </div>
-                <h3 className="text-sm text-zinc-400 mt-3 mb-1">Categoria</h3>
-                <p className="text-zinc-200">{data.category}</p>
-                <h3 className="text-sm text-zinc-400 mt-3 mb-1">Estado</h3>
-                <p><StatusBadge status={data.status} /></p>
-                <h3 className="text-sm text-zinc-400 mt-3 mb-1">Notas</h3>
-                <p className="text-zinc-200">{data.notes}</p>
-                
-            </div>
-            <ItemsActions code={data.code} currentStatus={data.status} />
+                <ItemsActions code={data.code} currentStatus={data.status} />
             </div>
         </main>
     );

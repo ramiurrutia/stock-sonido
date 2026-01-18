@@ -43,7 +43,7 @@ export default function AnvilPage() {
   const code = params.code as string;
   const [data, setData] = useState<AnvilData | null>(null);
   const [loading, setLoading] = useState(true);
-  
+
   // Para el buscador de items
   const [search, setSearch] = useState("");
   const [searchResults, setSearchResults] = useState<SearchItem[]>([]);
@@ -100,7 +100,7 @@ export default function AnvilPage() {
   // Agregar item al anvil
   const addItemToAnvil = async (item: SearchItem) => {
     if (!data) return;
-    
+
     setIsAdding(true);
     try {
       await axios.post("http://localhost:4000/anvils/add", {
@@ -113,7 +113,7 @@ export default function AnvilPage() {
       setSearch("");
       setSearchResults([]);
       await fetchAnvil();
-      
+
       alert(`${item.name} agregado al anvil`);
     } catch (error) {
       console.error("Error adding item:", error);
@@ -145,14 +145,26 @@ export default function AnvilPage() {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold">{data.anvil.name}</h1>
-      <p>Código: {data.anvil.code}</p>
-      <p>Estado: <StatusBadge status={data.anvil.status}/></p>
-      <p>Notas: {data.anvil.notes || "Sin notas"}</p>
+      <div className="flex flex-col rounded-lg p-4 bg-linear-to-tl from-zinc-900 to-zinc-800 ring ring-zinc-600 mb-4">
+        <div className="text-center border-b border-zinc-400/80 p-2 mb-1">
+          <h2 className="font-bold text-lg text-zinc-200">{data.anvil.name}</h2>
+          <p className="font-medium text-sm text-zinc-400 tracking-wider">{data.anvil.code}</p>
+        </div>
+        <h3 className="text-sm text-zinc-400 mt-2">Estado</h3>
+        <p><StatusBadge status={data.anvil.status} /></p>
+
+        {data.anvil.notes && (
+          <div>
+            <h3 className="text-sm text-zinc-400 mt-2">Notas</h3>
+            <p className="text-zinc-200">{data.anvil.notes}</p>
+          </div>
+        )}
+      </div>
+
 
       {/* Buscador para agregar items */}
       <div className="my-6">
-        <h3 className="text-lg font-semibold mb-2">Agregar item al anvil</h3>
+        <h3 className="text-sm mb-2 text-center">Agregar item al anvil</h3>
         <Combobox
           onChange={(item: SearchItem | null) => {
             if (item) addItemToAnvil(item);
@@ -161,7 +173,7 @@ export default function AnvilPage() {
         >
           <div className="relative">
             <Combobox.Input
-              className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="rounded-lg bg-linear-to-r from-zinc-900 to-zinc-800 ring-1  ring-zinc-700 focus:ring-zinc-500 w-full py-2 text-center text-sm/6 text-zinc-200 focus:not-data-focus:outline-none data-focus:outline-none transition-all"
               placeholder="Buscar item para agregar..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -174,11 +186,11 @@ export default function AnvilPage() {
                   <Combobox.Option
                     key={item.id}
                     value={item}
-                    className="cursor-pointer px-4 py-2 hover:bg-zinc-700 transition-colors"
+                    className="cursor-pointer px-2 py-2 hover:bg-zinc-700 transition-colors"
                   >
                     <div className="flex justify-between items-center">
                       <div>
-                        <p className="font-medium text-white">{item.name}</p>
+                        <p className="text-zinc-200">{item.name}</p>
                         <p className="text-sm text-zinc-400">{item.code}</p>
                       </div>
                       <StatusBadge status={item.status} />
@@ -193,7 +205,7 @@ export default function AnvilPage() {
 
       {/* Lista de items en el anvil */}
       <h2 className="text-xl font-bold mt-8 mb-4">Items en este Anvil ({data.items.length})</h2>
-      
+
       <div className="space-y-4">
         {data.items.map((item) => (
           <div key={item.id} className="border border-zinc-700 rounded-lg p-4 flex justify-between items-start">
@@ -202,7 +214,7 @@ export default function AnvilPage() {
               <p className="text-zinc-400">Código: {item.code}</p>
               <p className="text-zinc-400">Categoría: {item.category}</p>
               <div className="mt-2">
-                <StatusBadge status={item.status}/>
+                <StatusBadge status={item.status} />
               </div>
             </div>
             <button

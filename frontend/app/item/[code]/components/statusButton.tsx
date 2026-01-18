@@ -1,5 +1,5 @@
 "use client";
-import { BsSend, BsBoxArrowInDown, BsBoxArrowUp, BsArchive } from "react-icons/bs";
+import { BsPinMap , BsBoxArrowInDown, BsBoxArrowUp, BsArchive } from "react-icons/bs";
 import Swal from "sweetalert2";
 
 export function StatusButton({ currentStatus, newButtonStatus, onClick }: { currentStatus: string, newButtonStatus: string, onClick: () => void }) {
@@ -9,23 +9,23 @@ export function StatusButton({ currentStatus, newButtonStatus, onClick }: { curr
     let styleButton = "";
 
     if (isActive) {
-        styleButton = "text-zinc-700 bg-zinc-900"
+        styleButton = "text-zinc-700 bg-zinc-900/80"
     } else {
         styleButton = "text-zinc-200 bg-linear-to-tl from-zinc-900 to-zinc-800 hover:bg-zinc-50/10 active:bg-zinc-100/15 ring ring-zinc-600"
     }
 
     switch (newButtonStatus) {
         case "Guardado":
-            statusSVG = <BsBoxArrowInDown className="size-10 mb-2" />
+            statusSVG = <BsBoxArrowInDown className="size-6 mb-1" />
             break;
         case "En uso":
-            statusSVG = <BsBoxArrowUp className="size-10 mb-2" />
+            statusSVG = <BsBoxArrowUp className="size-6 mb-1" />
             break;
         case "Enviado":
-            statusSVG = <BsSend className="size-10 mb-2" />
+            statusSVG = <BsPinMap className="size-6 mb-1" />
             break;
         case "Baja":
-            statusSVG = <BsArchive className="size-10 mb-2" />
+            statusSVG = <BsArchive className="size-6 mb-1" />
             break;
     }
 
