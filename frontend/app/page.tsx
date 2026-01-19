@@ -1,7 +1,7 @@
 "use client"
 
 import Button from "./components/button"
-import Header from "./components/navBar";
+import Header from "./components/navbar/navBar";
 import { useRouter } from "next/navigation";
 
 export default function Home() {

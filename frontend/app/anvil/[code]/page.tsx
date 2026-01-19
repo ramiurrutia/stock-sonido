@@ -1,13 +1,15 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import StatusBadge from "@/app/components/ui/StatusBadge";
 import { Combobox } from "@headlessui/react";
 import { useDebounce } from "use-debounce";
-import { BsTrash } from "react-icons/bs";
+import { BsLink45Deg, BsTrash } from "react-icons/bs";
 import Swal from "sweetalert2";
+
+
 
 interface AnvilData {
   anvil: {
@@ -116,11 +118,11 @@ export default function AnvilPage() {
       setSearchResults([]);
       await fetchAnvil();
 
-      Swal.fire({ title: `${item.name} agregado al anvil`, theme: 'dark', toast: true });
+      Swal.fire({ title: `${item.name} agregado al anvil`, theme: 'dark', toast: true, position: "top", showConfirmButton: false, timer: 2000, timerProgressBar: true });
     } catch (error) {
       console.error("Error adding item:", error);
       const errorMessage = axios.isAxiosError(error) ? error.response?.data?.error : "Error al agregar item";
-      Swal.fire({ title: errorMessage || "Error al agregar item", theme: 'dark', toast: true });
+      Swal.fire({ title: errorMessage || "Error al agregar item", theme: 'dark', toast: true, position: "top" });
     } finally {
       setIsAdding(false);
     }
@@ -135,7 +137,7 @@ export default function AnvilPage() {
       showCancelButton: true,
       theme: 'dark',
       confirmButtonText: 'Confirmar',
-      cancelButtonText: 'Cancelar'
+      cancelButtonText: 'Cancelar',
     });
 
     if (result.isConfirmed) {
@@ -146,9 +148,10 @@ export default function AnvilPage() {
           title: `${itemName} eliminado del anvil`,
           toast: true,
           theme: 'dark',
-          position: 'top-end',
-          timer: 3000,
-          showConfirmButton: false
+          position: 'top',
+          timer: 2000,
+          showConfirmButton: false,
+          timerProgressBar: true
         })
       } catch (error) {
         console.error("Error removing item:", error);
@@ -159,13 +162,20 @@ export default function AnvilPage() {
           title: errorMessage || "Error al eliminar item",
           toast: true,
           theme: 'dark',
-          icon: 'error'
+          icon: 'error',
+          position: "top",
+          timer: 2000,
+          timerProgressBar: true
         });
       };
     }
   }
+  const router = useRouter()
+
   if (loading) return <p>Cargando...</p>;
   if (!data) return <p>Anvil no encontrado</p>;
+
+
 
   return (
     <div className="flex flex-col p-4 items-center justify-center w-screen h-screen">
@@ -202,6 +212,7 @@ export default function AnvilPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 disabled={isAdding}
+                autoComplete="off"
               />
 
               {searchResults.length > 0 && (
@@ -231,10 +242,8 @@ export default function AnvilPage() {
           {data.items.map((item) => (
             <div key={item.id} className="border border-zinc-700 rounded-lg p-4 flex justify-between items-start">
               <div>
-                <h3 className="font-semibold">{item.name}</h3>
-                <p className="text-zinc-400 text-[12px]">{item.code} | {item.category}</p>              <div>
-                  <StatusBadge status={item.status} />
-                </div>
+                <h3 className="font-semibold flex flex-row items-center underline underline-offset-2 mb-1" onClick={()=>{ router.push(`/item/${item.code}`)} }>{item.name}<BsLink45Deg className="size-6 ml-1" /></h3>
+                <p className="text-zinc-400 text-[12px]">{item.code} | {item.category} <StatusBadge status={item.status} /></p>
               </div>
               <button
                 onClick={() => removeItemFromAnvil(item.id, item.name)}
@@ -244,8 +253,8 @@ export default function AnvilPage() {
               </button>
             </div>
           ))}
-        </div>
       </div>
     </div>
+    </div >
   );
 }

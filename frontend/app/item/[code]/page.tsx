@@ -6,8 +6,8 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import StatusBadge from "../../components/ui/StatusBadge";
 import ItemsActions from "./components/itemsActions";
-import BackButton from "@/app/components/backButton";
-import NavBar from "@/app/components/navBar";
+import BackButton from "@/app/components/navbar/backButton";
+import NavBar from "@/app/components/navbar/navBar";
 import Swal from "sweetalert2";
 
 interface ItemData {
@@ -48,6 +48,18 @@ export default function ItemPage() {
     };
 
     useEffect(() => {
+        const fetchItem = async () => {
+            try {
+                const response = await axios.get(`http://localhost:4000/items/${code}`);
+                setData(response.data);
+                setNotes(response.data.notes || "");
+            } catch (error) {
+                console.error("Error fetching item:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
         fetchItem();
     }, [code]);
 
@@ -62,7 +74,7 @@ export default function ItemPage() {
                 title: "Notas actualizadas",
                 toast: true,
                 theme: "dark",
-                position: "top-end",
+                position: "top",
                 timer: 2000,
                 showConfirmButton: false,
             });
@@ -73,6 +85,7 @@ export default function ItemPage() {
                 toast: true,
                 theme: "dark",
                 icon: "error",
+                position: "top"
             });
         }
     };
@@ -97,9 +110,10 @@ export default function ItemPage() {
                     title: "Item quitado del anvil",
                     toast: true,
                     theme: "dark",
-                    position: "top-end",
+                    position: "top",
                     timer: 2000,
                     showConfirmButton: false,
+
                 });
             } catch (error) {
                 console.error("Error removing from anvil:", error);
@@ -108,6 +122,7 @@ export default function ItemPage() {
                     toast: true,
                     theme: "dark",
                     icon: "error",
+                    position: "top"
                 });
             }
         }
@@ -142,22 +157,21 @@ export default function ItemPage() {
                         </p>
                     </div>
 
-                    {/* Mostrar anvil si está en uno */}
                     {data.anvil && (
                         <div className="mt-3 p-3 border border-zinc-600 rounded-lg bg-zinc-900">
-                            <h3 className="text-xs text-zinc-400 mb-1">📦 En anvil</h3>
-                            <p className="font-semibold text-sm text-zinc-200">{data.anvil.name}</p>
-                            <p className="text-xs text-zinc-400">{data.anvil.code}</p>
-                            <div className="flex gap-2 mt-2">
+                            <h3 className="text-xs text-zinc-400">Anvil asignado</h3>
+                            <p className="font-semibold text-sm text-zinc-200">{data.anvil.name} <span className="text-sm text-zinc-400">| {data.anvil.code}</span></p>
+
+                            <div className="flex gap-2 mt-2 items-center">
                                 <button
                                     onClick={() => router.push(`/anvil/${data.anvil!.code}`)}
-                                    className="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors text-xs"
+                                    className="px-2 py-1 bg-zinc-200 hover:bg-zinc-400 text-zinc-900 rounded transition-colors text-xs"
                                 >
                                     Ver Anvil
                                 </button>
                                 <button
                                     onClick={removeFromAnvil}
-                                    className="px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded transition-colors text-xs"
+                                    className="px-2 py-1 text-zinc-200 rounded transition-colors text-xs underline underline-offset-2"
                                 >
                                     Quitar
                                 </button>
@@ -165,14 +179,13 @@ export default function ItemPage() {
                         </div>
                     )}
 
-                    {/* Notas editables */}
                     <div className="mt-3">
                         <div className="flex justify-between items-center mb-1">
                             <h3 className="text-sm text-zinc-400">Notas</h3>
                             {!editingNotes && (
                                 <button
                                     onClick={() => setEditingNotes(true)}
-                                    className="text-xs text-blue-500 hover:text-blue-400"
+                                    className="text-xs text-zinc-200 hover:text-zinc-400 transition-colors underline underline-offset-2"
                                 >
                                     Editar
                                 </button>
@@ -191,7 +204,7 @@ export default function ItemPage() {
                                 <div className="flex gap-2 mt-2">
                                     <button
                                         onClick={saveNotes}
-                                        className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded transition-colors text-xs"
+                                        className="px-3 py-1 bg-zinc-200 hover:bg-zinc-400 text-zinc-900 rounded transition-colors text-xs"
                                     >
                                         Guardar
                                     </button>
@@ -200,7 +213,7 @@ export default function ItemPage() {
                                             setEditingNotes(false);
                                             setNotes(data.notes || "");
                                         }}
-                                        className="px-3 py-1 bg-zinc-700 hover:bg-zinc-600 text-white rounded transition-colors text-xs"
+                                        className="px-3 py-1 bg-zinc-800 hover:bg-zinc-700 text-white rounded transition-colors text-xs"
                                     >
                                         Cancelar
                                     </button>
@@ -211,7 +224,11 @@ export default function ItemPage() {
                         )}
                     </div>
                 </div>
-                <ItemsActions code={data.code} currentStatus={data.status} />
+                <ItemsActions
+                    code={data.code}
+                    currentStatus={data.status}
+                    onStatusChange={fetchItem}
+                />
             </div>
         </main>
     );

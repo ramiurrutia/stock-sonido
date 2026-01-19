@@ -1,5 +1,5 @@
 import QrScanner from "./components/qrScanner";
-import BackButton from "../components/backButton";
+import BackButton from "../components/navbar/backButton";
 
 export default function ScanPage() {
 

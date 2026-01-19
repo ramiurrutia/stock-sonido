@@ -61,6 +61,7 @@ export default function SearchBar() {
                     onChange={(e) => {
                         setSearch(e.target.value);
                     }}
+                    autoComplete="off"
                 />
 
                 {items.length > 0 && (
