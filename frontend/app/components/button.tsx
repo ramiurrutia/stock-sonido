@@ -15,7 +15,7 @@ export default function Button({ textButton, onClick}: { textButton: string, onC
             break;
     }
 
-    return <button onClick={onClick} className={`text-sm min-h-32 min-w-32 flex flex-col items-center justify-center rounded-lg transition-all text-zinc-200 bg-linear-to-tl from-zinc-900 to-zinc-800 hover:bg-zinc-50/10 active:bg-zinc-100/15 ring ring-zinc-600`}>
+    return <button onClick={onClick} className={`text-sm min-h-36 min-w-36 flex flex-col items-center justify-center rounded-lg transition-all text-zinc-200 bg-linear-to-tl from-zinc-900 to-zinc-800 hover:bg-zinc-50/10 active:bg-zinc-100/15 ring ring-zinc-600`}>
         {buttonSVG}{textButton}
     </button>
 }

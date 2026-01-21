@@ -45,10 +45,10 @@ export function LastItem() {
     <div className="flex flex-col items-center justify-center mt-12">
       <p className="text-zinc-400 mb-2">Último item visto</p>
       <div
-        className="bg-linear-to-tl from-zinc-800 to-zinc-900 ring-1 ring-zinc-700 px-4 py-2 rounded-lg w-68 cursor-pointer hover:ring-zinc-600 transition-all"
+        className="bg-linear-to-tl from-zinc-800 to-zinc-900 ring-1 ring-zinc-700 px-4 py-3 rounded-lg w-76 cursor-pointer hover:ring-zinc-600 transition-all"
         onClick={() => router.push(`/item/${item.code}`)}
       >
-        <p className="flex flex-row items-center">{item.name}<BsLink45Deg className="size-6 ml-1" /></p>
+        <p className="flex flex-row items-center underline underline-offset-2">{item.name}<BsLink45Deg className="size-6" /></p>
         <p className="text-xs text-zinc-400">{item.code}</p>
       </div>
     </div>

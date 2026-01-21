@@ -3,6 +3,37 @@ import { pool } from "../db.js";
 
 const router = express.Router();
 
+router.get("/stats", async (req, res) => {
+  try {
+    const query = `
+      SELECT 
+        -- Total de items que NO son Anvils
+        COUNT(CASE WHEN category != 'Anvil' THEN 1 END) ::int as "totalItems",
+        
+        -- Conteos por estado (Excluyendo Anvils)
+        COUNT(CASE WHEN status = 'Guardado' AND category != 'Anvil' THEN 1 END) ::int as "guardados",
+        COUNT(CASE WHEN status = 'Enviado' AND category != 'Anvil' THEN 1 END) ::int as "enviados",
+        COUNT(CASE WHEN status = 'En Uso' AND category != 'Anvil' THEN 1 END) ::int as "enUso",
+        COUNT(CASE WHEN status = 'Baja' AND category != 'Anvil' THEN 1 END) ::int as "baja",
+        
+        -- Total de Anvils (Suponiendo que se identifican por categoría)
+        COUNT(CASE WHEN category = 'Anvil' THEN 1 END) ::int as "totalAnvils"
+      FROM items;
+    `;
+
+    const result = await pool.query(query);
+    
+    // Postgres devuelve un array en rows, tomamos el primero
+    // Nos aseguramos de devolver el objeto con las claves exactas
+    const stats = result.rows[0];
+
+    res.json(stats);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error al obtener estadísticas" });
+  }
+});
+
 router.get("/logs", async (req, res) => {
   try {
     const result = await pool.query(

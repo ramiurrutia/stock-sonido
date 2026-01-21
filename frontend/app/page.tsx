@@ -4,9 +4,9 @@ import Button from "./components/button"
 import { LastItem } from "./components/lastItem";
 import Header from "./components/navbar/navBar";
 import { useRouter } from "next/navigation";
+import AdminShortcuts from "./components/ui/AdminShorcuts";
 
 export default function Home() {
-
   const router = useRouter()
 
   return (
@@ -27,7 +27,7 @@ export default function Home() {
           textButton="Anviles"
           onClick={() => { router.push(`/anvil`) }} />
       </div>
-
+      <AdminShortcuts />
       <LastItem />
 
     </main>
