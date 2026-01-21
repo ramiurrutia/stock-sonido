@@ -55,7 +55,7 @@ export default function QrScanner() {
       }
     };
 
-    const timer = setTimeout(startScanner, 100);
+    const timer = setTimeout(startScanner, 50);
 
     return () => {
       mounted = false;

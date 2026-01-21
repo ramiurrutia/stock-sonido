@@ -1,9 +1,7 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import axios from "axios";
 import StatusBadge from '@/app/components/ui/StatusBadge';
 import BackButton from "../components/navbar/backButton";
+import Link from 'next/link';
+import { BsLink45Deg } from 'react-icons/bs';
 
 interface Anvil {
   id: number;
@@ -16,39 +14,38 @@ interface Anvil {
   items_count: number;
 }
 
-export default function AnvilsPage() {
-  const [anvils, setAnvils] = useState<Anvil[]>([]);
-  const [loading, setLoading] = useState(true);
+async function getAnvils() {
+  const res = await fetch("http://localhost:4000/anvils", { cache: 'no-store' });
+  
+  if (!res.ok) {
+    throw new Error('Error al cargar los anviles');
+  }
+  
+  return res.json();
+}
 
-  useEffect(() => {
-    const fetchAnvils = async () => {
-      try {
-        const { data } = await axios.get("http://localhost:4000/anvils");
-        setAnvils(data);
-      } catch (error) {
-        console.error("Error fetching anvils:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAnvils();
-  }, []);
-
-  if (loading) return <p>Cargando anvils...</p>;
+export default async function AnvilsPage() {
+  const anvils: Anvil[] = await getAnvils();
 
   return (
     <div>
       <BackButton />
-      <div className="flex flex-col h-screen w-screen justify-center items-center">
-        <h1 className="font-semibold text-xl items-center m-4">Anviles: {anvils.length}</h1>
+      <div className="flex flex-col min-h-screen min-w-screen justify-center items-center">
+        <h1 className="font-semibold text-xl items-center m-4">
+          Anviles: {anvils.length}
+        </h1>
 
         {anvils.map((anvil) => (
-          <div key={anvil.id} className="flex flex-col bg-linear-to-tl from-zinc-900 to-zinc-800 ring-1 p-4 rounded-lg ring-zinc-600">
-            <div className="flex flex-row justify-between items-center">
-              <h2 className="text-center">{anvil.name}</h2>
+          <Link 
+            href={`/anvil/${anvil.code}`}
+            key={anvil.id} 
+            className="flex flex-col bg-linear-to-tl from-zinc-900 to-zinc-800 ring-1 p-4 rounded-lg ring-zinc-600 mb-4 min-w-80"
+          >
+            <div className="flex flex-row justify-between items-center mb-1 border-b border-zinc-600">
+              <h2 className="text-center flex flex-row underline underline-offset-2">{anvil.name}<BsLink45Deg className="size-6 ml-1" /></h2>
               <span className="text-zinc-500 ml-12">{anvil.code}</span>
             </div>
+            
             <div className="flex flex-row justify-between">
               <div>
                 <h3 className="text-zinc-500 text-xs">Estado</h3>
@@ -59,9 +56,7 @@ export default function AnvilsPage() {
                 <p className="text-right">{anvil.items_count}</p>
               </div>
             </div>
-
-
-          </div>
+          </Link>
         ))}
       </div>
     </div>

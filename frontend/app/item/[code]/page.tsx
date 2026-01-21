@@ -1,9 +1,10 @@
 "use client";
 
+import Loading from "./loading"
 import axios from "axios";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import StatusBadge from "../../components/ui/StatusBadge";
 import ItemsActions from "./components/itemsActions";
 import BackButton from "@/app/components/navbar/backButton";
@@ -35,33 +36,26 @@ export default function ItemPage() {
     const [editingNotes, setEditingNotes] = useState(false);
     const [notes, setNotes] = useState("");
 
-    const fetchItem = async () => {
-        try {
-            const response = await axios.get(`http://localhost:4000/items/${code}`);
-            setData(response.data);
-            setNotes(response.data.notes || "");
-        } catch (error) {
-            console.error("Error fetching item:", error);
-        } finally {
-            setLoading(false);
+const fetchItem = useCallback(async () => {
+    try {
+        setLoading(true); // Opcional: para mostrar carga al refrescar
+        const response = await axios.get(`http://localhost:4000/items/${code}`);
+        setData(response.data);
+        setNotes(response.data.notes || "");
+        
+        if (typeof window !== "undefined") {
+            localStorage.setItem("lastItem", JSON.stringify(response.data));
         }
-    };
+    } catch (error) {
+        console.error("Error fetching item:", error);
+    } finally {
+        setLoading(false);
+    }
+}, [code]);
 
-    useEffect(() => {
-        const fetchItem = async () => {
-            try {
-                const response = await axios.get(`http://localhost:4000/items/${code}`);
-                setData(response.data);
-                setNotes(response.data.notes || "");
-            } catch (error) {
-                console.error("Error fetching item:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchItem();
-    }, [code]);
+useEffect(() => {
+    fetchItem();
+}, [fetchItem]);
 
     const saveNotes = async () => {
         if (!data) return;
@@ -128,8 +122,20 @@ export default function ItemPage() {
         }
     };
 
-    if (loading) return <p className="text-center mt-8">Cargando...</p>;
-    if (!data) return <p className="text-center mt-8">Item no encontrado</p>;
+    if (loading) return <Loading />;
+    if (!data) return (<main className="flex flex-col items-center justify-center p-4 h-screen w-screen bg-black">
+      <BackButton />
+      <div className="bg-linear-to-tl from-zinc-900 to-zinc-800 ring-1 ring-zinc-600 p-8 rounded-lg text-center max-w-xs">
+        <h2 className="text-zinc-200 font-bold text-lg mb-2">Algo salió mal</h2>
+        <p className="text-zinc-500 text-sm mb-6">No se encontraron los datos</p>
+        <button 
+          onClick={() => window.location.reload()}
+          className="bg-zinc-200 hover:bg-zinc-400 text-zinc-900 px-4 py-2 rounded transition-colors w-full"
+        >
+          Reintentar
+        </button>
+      </div>
+    </main>)
 
     return (
         <main className="flex flex-col items-center justify-center p-4 h-screen w-screen">

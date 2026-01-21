@@ -1,93 +1,87 @@
 "use client";
 
-import { useState } from "react";
-import { BsPersonCircle, BsLock, BsUnlock } from "react-icons/bs";
+import { BsPersonCircle } from "react-icons/bs";
 import Swal from "sweetalert2";
 
 export default function User() {
-  const [userName, setUserName] = useState(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("userName") || "";
-    }
-    return "";
-  });
-  const [isLocked, setIsLocked] = useState(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("userNameLocked") === "true";
-    }
-    return false;
-  });
-
   const handleOpen = async () => {
+    const currentName = localStorage.getItem("userName") || "";
+    const isLocked = localStorage.getItem("userNameLocked") === "true";
+
     const result = await Swal.fire({
       title: "Usuario",
       html: `
         <div class="text-left">
-          <label class="text-sm text-zinc-500 mb-1">Nombre</label>
+          <label class="text-sm text-zinc-400 block mb-1">Nombre</label>
           <input 
             id="userName" 
             type="text" 
-            value="${userName}" 
+            value="${currentName}" 
             ${isLocked ? 'disabled' : ''}
-            class="w-full px-3 py-2 bg-zinc-900 border border-zinc-700 rounded text-zinc-200 focus:outline-none focus:ring-1 focus:ring-zinc-500 disabled:opacity-50"
+            class="w-full px-3 py-2 bg-zinc-900 border border-zinc-700 rounded text-zinc-200 focus:outline-none focus:ring-2 focus:ring-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed"
             placeholder="Ingresá tu nombre"
           />
-          <p class="text-xs text-zinc-500 mt-1">
-            ${isLocked ? 'Nombre bloqueado. Desbloqueá para editar.' : 'Bloqueá el nombre para evitar cambios accidentales.'}
-          </p>
-          ${userName ? `<p class="text-xs text-zinc-400 mt-3">Usuario actual: <span class="text-zinc-200 font-medium">${userName}</span></p>` : ''}
+          ${isLocked ? '<p class="text-xs text-yellow-500">Nombre bloqueado</p>' : ''}
         </div>
       `,
+      position: "top",
+      width: "400px",
+      showConfirmButton: isLocked ? false : true,
       showCancelButton: true,
-      showDenyButton: true,
+      showDenyButton: isLocked,
       confirmButtonText: isLocked ? "Cerrar" : "Guardar",
       cancelButtonText: "Cancelar",
-      denyButtonText: isLocked ? `<BsLock className="size-4" /> Desbloquear` : `<BsLock className="size-4" />Bloquear`,
+      cancelButtonColor: isLocked ? "#09090b" : "#0000",
+      denyButtonText: "Editar",
       background: '#27272a',
-      color: '#e4e4e7',
-      confirmButtonColor: isLocked ? '#3f3f46' : '#2563eb',
-      cancelButtonColor: '#3f3f46',
-      denyButtonColor: isLocked ? '#dc2626' : '#3f3f46',
+      color: '#f4f4f5',
+      confirmButtonColor: '#09090b',
+      denyButtonColor: '#eab308',
+      backdrop: '#0007',
       preConfirm: () => {
-        const input = document.getElementById("userName") as HTMLInputElement;
-        return input?.value;
+        if (!isLocked) {
+          const input = document.getElementById("userName") as HTMLInputElement;
+          return input?.value;
+        }
       },
       didOpen: () => {
-        const input = document.getElementById("userName") as HTMLInputElement;
         if (!isLocked) {
+          const input = document.getElementById("userName") as HTMLInputElement;
           input?.focus();
+        }
+      },
+      didClose: () => {
+        if (!isLocked) {
+          localStorage.setItem("userNameLocked", "true");
         }
       }
     });
 
-    // Si apretó el botón de lock/unlock
+    // Si apretó "Editar" (deny), desbloquear y reabrir
     if (result.isDenied) {
-      const newLockState = !isLocked;
-      setIsLocked(newLockState);
-      localStorage.setItem("userNameLocked", newLockState.toString());
-      handleOpen(); // Reabrir el modal con el nuevo estado
+      localStorage.setItem("userNameLocked", "false");
+      handleOpen();
       return;
     }
 
-    // Si confirmó y no está bloqueado, guardar
+    // Si confirmó y no está bloqueado, guardar y bloquear
     if (result.isConfirmed && !isLocked && result.value) {
       localStorage.setItem("userName", result.value);
-      setUserName(result.value);
+      localStorage.setItem("userNameLocked", "true");
       Swal.fire({
         title: "Nombre guardado",
         toast: true,
         theme: "dark",
         position: "top",
-        timer: 2000,
+        timer: 1700,
         showConfirmButton: false,
-        timerProgressBar: true
       });
     }
   };
 
   return (
-    <BsPersonCircle 
-      className="fixed size-6 right-0 mx-4 text-zinc-600 cursor-pointer hover:text-zinc-400 transition-colors" 
+    <BsPersonCircle
+      className="fixed size-8 right-0 mr-4 text-zinc-600 cursor-pointer hover:text-zinc-400 transition-colors"
       onClick={handleOpen}
     />
   );

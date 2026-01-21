@@ -4,6 +4,8 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { StatusButton } from "./statusButton";
 
+
+
 export default function ItemActions({
     code,
     currentStatus,
@@ -25,8 +27,9 @@ export default function ItemActions({
 
         if (result.isConfirmed) {
             try {
+                const userName = localStorage.getItem('userName')
                 await axios.put(`http://localhost:4000/items/${code}/status`, {
-                    status: newStatus,
+                    status: newStatus, userName: userName 
                 });
 
                 // Refresca los datos del padre

@@ -8,6 +8,9 @@ import { Combobox } from "@headlessui/react";
 import { useDebounce } from "use-debounce";
 import { BsLink45Deg, BsTrash } from "react-icons/bs";
 import Swal from "sweetalert2";
+import BackButton from "@/app/components/navbar/backButton";
+import NavBar from "@/app/components/navbar/navBar"
+import Loading from "../loading";
 
 
 
@@ -93,6 +96,7 @@ export default function AnvilPage() {
         // Filtrar anvils de los resultados
         const filtered = data.filter((item: SearchItem) => !item.code.startsWith('ANVI-'));
         setSearchResults(filtered);
+
       } catch (error) {
         console.error("Error searching items:", error);
       }
@@ -172,16 +176,43 @@ export default function AnvilPage() {
   }
   const router = useRouter()
 
-  if (loading) return <p>Cargando...</p>;
-  if (!data) return <p>Anvil no encontrado</p>;
+  if (loading) return <Loading />;
+  if (!data)   return (
+    <main className="flex flex-col items-center justify-center h-screen w-screen p-4">
+      <div className="bg-linear-to-tl from-red-300/5 to-red-500/5 rounded-lg py-4 px-12 max-w-md text-center ring-1 ring-red-300/15">
+        <h1 className="text-xl font-semibold text-zinc-200 mb-4">
+          Ocurrió un error
+        </h1>
+        <p className="text-red-400 mb-6 bg-zinc-100/5 p-2 rounded-lg font-mono">
+         No se encontraron los datos
+        </p>
+        <div className="flex gap-3 justify-center">
+          <button
+            onClick={()=>{window.location.reload()}}
+            className="px-4 py-2 bg-linear-to-br from-red-200/10 to-red-300/10 hover:bg-red-200/15 text-white rounded transition-colors"
+          >
+            Reintentar
+          </button>
+          <button
+            onClick={() => router.push("/")}
+            className="px-4 py-2 text-zinc-200 hover:text-zinc-400 underline underline-offset-3 rounded transition-colors"
+          >
+            Volver al inicio
+          </button>
+        </div>
+      </div>
+    </main>
+  );
 
 
 
   return (
     <div className="flex flex-col p-4 items-center justify-center w-screen h-screen">
+      <BackButton />
+      <NavBar />
       <div className="rounded-lg p-4 bg-linear-to-tl from-zinc-900 to-zinc-800 ring ring-zinc-600 transition-all min-w-3xs">
         <div className="flex flex-col  mb-4">
-          <div className="text-center border-b border-zinc-600 p-2 mb-1">
+          <div className="text-center border-b border-zinc-600 pb-2 mb-1">
             <h2 className="font-bold text-lg text-zinc-200">{data.anvil.name}</h2>
             <p className="font-medium text-sm text-zinc-400 tracking-wider">{data.anvil.code}</p>
           </div>
@@ -242,7 +273,7 @@ export default function AnvilPage() {
           {data.items.map((item) => (
             <div key={item.id} className="border border-zinc-700 rounded-lg p-4 flex justify-between items-start">
               <div>
-                <h3 className="font-semibold flex flex-row items-center underline underline-offset-2 mb-1" onClick={()=>{ router.push(`/item/${item.code}`)} }>{item.name}<BsLink45Deg className="size-6 ml-1" /></h3>
+                <h3 className="font-semibold flex flex-row items-center underline underline-offset-2 mb-1" onClick={() => { router.push(`/item/${item.code}`) }}>{item.name}<BsLink45Deg className="size-6 ml-1" /></h3>
                 <p className="text-zinc-400 text-[12px]">{item.code} | {item.category} <StatusBadge status={item.status} /></p>
               </div>
               <button
@@ -253,8 +284,8 @@ export default function AnvilPage() {
               </button>
             </div>
           ))}
+        </div>
       </div>
-    </div>
     </div >
   );
 }

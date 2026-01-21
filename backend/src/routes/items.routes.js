@@ -4,7 +4,7 @@ import { pool } from "../db.js";
 const router = express.Router();
 
 router.put("/items/:code/status", async (req, res) => {
-  const { status } = req.body;
+  const { status, userName } = req.body;
   const code = req.params.code;
   
   try {
@@ -31,7 +31,7 @@ router.put("/items/:code/status", async (req, res) => {
     await pool.query(
       `INSERT INTO movements (item_id, action, previous_status, new_status, user_name)
        VALUES ($1, 'status_change', $2, $3, $4)`,
-      [itemId, oldStatus, status, null] // userName como null por ahora
+      [itemId, oldStatus, status, userName] // userName como null por ahora
     );
 
     res.json({ 

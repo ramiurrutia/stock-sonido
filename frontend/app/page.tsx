@@ -1,11 +1,11 @@
 "use client"
 
 import Button from "./components/button"
+import { LastItem } from "./components/lastItem";
 import Header from "./components/navbar/navBar";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
-
 
   const router = useRouter()
 
@@ -14,20 +14,23 @@ export default function Home() {
     <main className="flex flex-col items-center justify-center p-6 h-screen w-screen">
       <Header />
 
-      <div className="flex flex-col items-center pb-4">
-        <h1 className="text-center text-4xl font-semibold text-heading text-transparent bg-clip-text bg-linear-to-br to-zinc-300 from-zinc-200 leading-7">Audio</h1>
-        <span className="text-md/tight font-light">Bahía Blanca</span>
+      <div className="flex flex-col items-center mb-12">
+        <h1 className="text-center text-5xl font-semibold text-heading text-transparent bg-clip-text bg-linear-to-b to-zinc-400 from-zinc-200 leading-10">Audio</h1>
+        <span className="text-lg text-zinc-200">Bahía Blanca</span>
       </div>
       <div className="flex flex-row gap-4">
         <Button
           textButton="Escanear"
-          onClick={() => { router.push(`/scan`)}}
+          onClick={() => { router.push(`/scan`) }}
         />
         <Button
           textButton="Anviles"
-          onClick={() => { router.push(`/anvil`)}} />
+          onClick={() => { router.push(`/anvil`) }} />
       </div>
+
+      <LastItem />
 
     </main>
   );
 }
+
