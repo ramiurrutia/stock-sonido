@@ -1,12 +1,15 @@
 "use client";
 import { Html5Qrcode } from "html5-qrcode";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function QrScanner() {
+  const [error, setError] = useState<Error | null>(null);
   const hasScannedRef = useRef(false);
   const router = useRouter();
-
+  if (error) {
+    throw error;
+  }
   useEffect(() => {
     const handleScan = (decodedText: string) => {
       if (decodedText.startsWith("ANVI")) {
@@ -21,7 +24,7 @@ export default function QrScanner() {
     const startScanner = async () => {
       const readerElement = document.getElementById("reader");
       if (!readerElement) return;
-      
+
       readerElement.innerHTML = "";
 
       try {
@@ -45,35 +48,39 @@ export default function QrScanner() {
               try {
                 await scanner.stop();
                 await scanner.clear();
-              } catch (e) {console.log(e)}
+              } catch (error) {
+                console.error("Error starting scanner:", error);
+                setError(error instanceof Error ? error : new Error("Fallo al iniciar cámara"))
+              }
             }
           },
-          () => {}
+          () => { }
         );
-      } catch (e) {
-        console.error("Error starting scanner:", e);
+      } catch (error) {
+        console.error("Error starting scanner:", error);
+        setError(error instanceof Error ? error : new Error("Fallo al iniciar cámara"))
       }
     };
 
-    const timer = setTimeout(startScanner, 50);
+    const timer = setTimeout(startScanner, 0);
 
     return () => {
       mounted = false;
       clearTimeout(timer);
-      
+
       const cleanup = async () => {
         if (scanner) {
           try {
             await scanner.stop();
             await scanner.clear();
-          } catch (e) {console.log(e)}
+          } catch (e) { console.log(e) }
         }
-        
+
         const readerElement = document.getElementById("reader");
         if (readerElement) {
           readerElement.innerHTML = "";
         }
-        
+
         scanner = null;
         hasScannedRef.current = false;
       };

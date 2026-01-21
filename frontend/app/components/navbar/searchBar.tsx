@@ -27,7 +27,7 @@ export default function SearchBar() {
         const searchItems = async () => {
             try {
                 const res = await axios.get(
-                    `http://localhost:4000/items/search?q=${debounceSearch}`
+                    `${process.env.NEXT_PUBLIC_API_URL}/items/search?q=${debounceSearch}`
                 );
                 setItems(Array.isArray(res.data) ? res.data : []);
             } catch (error) {

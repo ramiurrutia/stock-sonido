@@ -39,7 +39,7 @@ export default function ItemPage() {
 const fetchItem = useCallback(async () => {
     try {
         setLoading(true); // Opcional: para mostrar carga al refrescar
-        const response = await axios.get(`http://localhost:4000/items/${code}`);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/items/${code}`);
         setData(response.data);
         setNotes(response.data.notes || "");
         
@@ -61,7 +61,7 @@ useEffect(() => {
         if (!data) return;
 
         try {
-            await axios.put(`http://localhost:4000/items/${code}`, { notes });
+            await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/items/${code}`, { notes });
             await fetchItem();
             setEditingNotes(false);
             Swal.fire({
@@ -97,7 +97,7 @@ useEffect(() => {
         if (result.isConfirmed) {
             try {
                 await axios.delete(
-                    `http://localhost:4000/anvils/${data.anvil.id}/items/${data.id}`
+                    `${process.env.NEXT_PUBLIC_API_URL}/anvils/${data.anvil.id}/items/${data.id}`
                 );
                 await fetchItem();
                 Swal.fire({

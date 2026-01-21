@@ -60,7 +60,7 @@ export default function AnvilPage() {
   useEffect(() => {
     const fetchAnvil = async () => {
       try {
-        const { data } = await axios.get(`http://localhost:4000/anvils/${code}`);
+        const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/anvils/${code}`);
         setData(data);
       } catch (error) {
         console.error("Error fetching anvil:", error);
@@ -74,7 +74,7 @@ export default function AnvilPage() {
 
   const fetchAnvil = async () => {
     try {
-      const { data } = await axios.get(`http://localhost:4000/anvils/${code}`);
+      const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/anvils/${code}`);
       setData(data);
     } catch (error) {
       console.error("Error fetching anvil:", error);
@@ -91,7 +91,7 @@ export default function AnvilPage() {
     const searchItems = async () => {
       try {
         const { data } = await axios.get(
-          `http://localhost:4000/items/search?q=${debouncedSearch}`
+          `${process.env.NEXT_PUBLIC_API_URL}/items/search?q=${debouncedSearch}`
         );
         // Filtrar anvils de los resultados
         const filtered = data.filter((item: SearchItem) => !item.code.startsWith('ANVI-'));
@@ -111,7 +111,7 @@ export default function AnvilPage() {
 
     setIsAdding(true);
     try {
-      await axios.post("http://localhost:4000/anvils/add", {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/anvils/add`, {
         anvil_id: data.anvil.id,
         item_id: item.id,
         notes: null
@@ -146,7 +146,7 @@ export default function AnvilPage() {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:4000/anvils/${data.anvil.id}/items/${itemId}`);
+        await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/anvils/${data.anvil.id}/items/${itemId}`);
         await fetchAnvil();
         Swal.fire({
           title: `${itemName} eliminado del anvil`,

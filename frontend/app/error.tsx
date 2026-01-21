@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Error({
@@ -11,10 +10,6 @@ export default function Error({
   reset: () => void;
 }) {
   const router = useRouter();
-
-  useEffect(() => {
-    console.error("Error:", error);
-  }, [error]);
 
   return (
     <main className="flex flex-col items-center justify-center h-screen w-screen p-4">

@@ -15,7 +15,7 @@ interface Anvil {
 }
 
 async function getAnvils() {
-  const res = await fetch("http://localhost:4000/anvils", { cache: 'no-store' });
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/anvils`, { cache: 'no-store' });
   
   if (!res.ok) {
     throw new Error('Error al cargar los anviles');

@@ -9,17 +9,14 @@ import { BsTerminal, BsGraphUp } from "react-icons/bs";
 export default function AdminPage() {
     const router = useRouter();
     const [authorized, setAuthorized] = useState(false);
-    // Agregamos un estado de "cargando" para evitar parpadeos
     const [checking, setChecking] = useState(true);
 
     useEffect(() => {
-        // Envolvemos la lógica en una función
         const checkAuth = () => {
             const userName = localStorage.getItem("userName");
             const admins = ["Ramiro Urrutia", "Jonatan Bittner", "Matias Kroneberger"];
 
             if (userName && admins.includes(userName)) {
-                // SOLUCIÓN: Usamos setTimeout para salir del ciclo síncrono
                 setTimeout(() => {
                     setAuthorized(true);
                     setChecking(false);
@@ -32,11 +29,8 @@ export default function AdminPage() {
         checkAuth();
     }, [router]);
 
-    // Mientras verifica, no mostramos nada (o un spinner si quisieras)
     if (checking) return null;
 
-    // Si terminó de chequear y no está autorizado, el router.push ya actuó, 
-    // pero por seguridad retornamos null aquí también.
     if (!authorized) return null;
 
     return (

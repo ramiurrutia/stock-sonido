@@ -28,11 +28,10 @@ export default function ItemActions({
         if (result.isConfirmed) {
             try {
                 const userName = localStorage.getItem('userName')
-                await axios.put(`http://localhost:4000/items/${code}/status`, {
+                await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/items/${code}/status`, {
                     status: newStatus, userName: userName 
                 });
 
-                // Refresca los datos del padre
                 if (onStatusChange) {
                     onStatusChange();
                 }
