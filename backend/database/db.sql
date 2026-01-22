@@ -9,10 +9,10 @@ CREATE TABLE items
         category IN (
             'Cable',
             'Consola',
-            'Micrófono',
+            'Microfono',
             'Parlante',
             'Potencia',
-            'Trípode',
+            'Tripode',
             'Electricidad',
             'Accesorio',
             'Anvil'
@@ -143,13 +143,85 @@ CREATE INDEX idx_movements_created_at ON movements(created_at);
 CREATE INDEX idx_shipment_items_shipment_id ON shipment_items(shipment_id);
 CREATE INDEX idx_shipment_items_item_id ON shipment_items(item_id);
 
+INSERT INTO items (code, name, category, status, notes) VALUES
+('CONS-0002', 'Mezcladora Allen & Heath Qu16', 'Consola', 'Guardado', 'Audio | 1 unidad | Modelo Qu16');
 
-INSERT INTO items (code, name, category, status, notes)
-VALUES
-    ('CABL-0001', 'Cable CANON (XLR) | 14 mts.', 'Cable', 'Guardado', 'Cable de audio XLR de 14 metros de longitud. De consola a micrófono.'),
-    ('CONS-0001', 'Consola Qu16 | Allen & Heath', 'Consola', 'Guardado', 'Consola de mezcla digital de 16 canales.'),
-    ('MICR-0001', 'Micrófono Shure | SM-58', 'Micrófono', 'Guardado', 'Micrófono dinámico para voces.'),
-    ('PARL-0001', 'Monitor Peavey (Pasivo) | PV-12M', 'Parlante', 'Guardado', '500W'),
-    ('POTE-0001', 'Potencia Crown | XLI 1500', 'Potencia', 'Guardado', '900W (4 ohmios p/canal).'),
-    ('TRIP-0001', 'Trípode de parlante | 2,5m', 'Trípode', 'Guardado', ''),
-    ('ELEC-0001', 'Tablero electrico', 'Electricidad', 'Guardado', '220V. Tablero con 17 salidas, 10 AMP, 1 ficha Scame 220V x 32 AMP.');
+INSERT INTO items (code, name, category, status, notes) VALUES
+('ACCS-0001', 'Placa USB Behringer UMC204 HD', 'Accesorio', 'Guardado', 'Audio | Interfaz USB');
+
+INSERT INTO items (code, name, category, status, notes) VALUES
+('ELEC-0002', 'Tablero Eléctrico', 'Electricidad', 'Guardado', '220V | 17 salidas | 10A | 1 ficha Scame 32A'),
+('ELEC-0003', 'Tablero Trifásico', 'Electricidad', 'Guardado', '380V | 3P+N+T | 2x16A 220V + 1x32A 220V');
+
+INSERT INTO items (code, name, category, status, notes) VALUES
+('POTE-0002', 'Potencia Crown XLI 1500', 'Potencia', 'Guardado', '900W 4Ω por canal'),
+('POTE-0003', 'Potencia Crown XLI 1500', 'Potencia', 'Guardado', '900W 4Ω por canal');
+
+INSERT INTO items (code, name, category, status, notes) VALUES
+('MICR-0002', 'Microfono Behringer ECM 8000', 'Microfono', 'Guardado', 'Medición acústica'),
+('MICR-0003', 'Microfono Shure SM-58', 'Microfono', 'Guardado', ''),
+('MICR-0004', 'Microfono Shure SM-58', 'Microfono', 'Guardado', ''),
+('MICR-0005', 'Microfono Shure SM-58', 'Microfono', 'Guardado', ''),
+('MICR-0006', 'Microfono Shure SM-58', 'Microfono', 'Guardado', ''),
+('MICR-0007', 'Microfono Shure SM-58', 'Microfono', 'Guardado', ''),
+('MICR-0008', 'Microfono AKG D8000', 'Microfono', 'Guardado', ''),
+('MICR-0009', 'Microfono Superlux D108', 'Microfono', 'Guardado', ''),
+('MICR-0010', 'Microfono Shure Beta 58A', 'Microfono', 'Guardado', ''),
+('MICR-0011', 'Microfono Shure Beta 58A', 'Microfono', 'Guardado', '');
+
+INSERT INTO items (code, name, category, status, notes) VALUES
+('PARL-0002', 'Parlante Peavey PR15', 'Parlante', 'Guardado', 'Pasivo | 400W'),
+('PARL-0003', 'Parlante Peavey PR15', 'Parlante', 'Guardado', 'Pasivo | 400W'),
+('PARL-0004', 'Parlante Peavey PV-12M', 'Parlante', 'Guardado', 'Pasivo | 500W'),
+('PARL-0005', 'Parlante Alto TS212', 'Parlante', 'Guardado', 'Activo | 550W'),
+('PARL-0006', 'Parlante Alto TS212', 'Parlante', 'Guardado', 'Activo | 550W'),
+('PARL-0007', 'Parlante Alto TS212', 'Parlante', 'Guardado', 'Activo | 550W'),
+('PARL-0008', 'Parlante Alto TS212', 'Parlante', 'Guardado', 'Activo | 550W'),
+('PARL-0009', 'Parlante Alto TS212', 'Parlante', 'Guardado', 'Activo | 550W'),
+('PARL-0010', 'Parlante Alto TS212', 'Parlante', 'Guardado', 'Activo | 550W'),
+('PARL-0011', 'Parlante Acustica AC-8A', 'Parlante', 'Guardado', 'Activo | 100W');
+
+INSERT INTO items (code, name, category, status, notes) VALUES
+('ACCS-0002', 'Pachera Lexsen Patch-16', 'Accesorio', 'Guardado', '30 metros | 12 entradas / 4 retornos');
+
+INSERT INTO items (code, name, category, status, notes) VALUES
+('TRIP-0002', 'Pie de Parlante', 'Tripode', 'Guardado', 'Altura 2,5 metros'),
+('TRIP-0003', 'Pie de Parlante', 'Tripode', 'Guardado', 'Altura 2,5 metros'),
+('TRIP-0004', 'Pie de Parlante', 'Tripode', 'Guardado', 'Altura 2,5 metros'),
+('TRIP-0005', 'Pie de Parlante', 'Tripode', 'Guardado', 'Altura 2,5 metros'),
+('TRIP-0006', 'Pie de Parlante', 'Tripode', 'Guardado', 'Altura 2,5 metros'),
+('TRIP-0007', 'Pie de Parlante', 'Tripode', 'Guardado', 'Altura 2,5 metros');
+
+INSERT INTO items (code, name, category, status, notes) VALUES
+('CABL-0002', 'Cable Canon (14 mts.)', 'Cable', 'Guardado', '14 mts.'),
+('CABL-0003', 'Cable Canon (14 mts.)', 'Cable', 'Guardado', '14 m'),
+('CABL-0004', 'Cable Canon (14 mts.)', 'Cable', 'Guardado', '14 m'),
+('CABL-0005', 'Cable Canon (14 mts.)', 'Cable', 'Guardado', '14 m'),
+('CABL-0006', 'Cable Canon (14 mts.)', 'Cable', 'Guardado', '14 m'),
+('CABL-0007', 'Cable Canon (14 mts.)', 'Cable', 'Guardado', '14 m'),
+('CABL-0008', 'Cable Canon (3 mts.)', 'Cable', 'Guardado', '3 m'),
+('CABL-0009', 'Cable Canon (3 mts.)', 'Cable', 'Guardado', '3 m'),
+('CABL-0010', 'Cable Canon (3 mts.)', 'Cable', 'Guardado', '3 m'),
+('CABL-0011', 'Cable Canon (3 mts.)', 'Cable', 'Guardado', '3 m'),
+('CABL-0012', 'Cable Canon (15 mts.)', 'Cable', 'Guardado', '15 m'),
+('CABL-0013', 'Cable Canon (15 mts.)', 'Cable', 'Guardado', '15 m'),
+('CABL-0014', 'Cable Canon (15 mts.)', 'Cable', 'Guardado', '15 m'),
+('CABL-0015', 'Cable Canon (15 mts.)', 'Cable', 'Guardado', '15 m'),
+('CABL-0016', 'Cable Canon (15 mts.)', 'Cable', 'Guardado', '15 m'),
+('CABL-0017', 'Cable Canon (15 mts.)', 'Cable', 'Guardado', '15 m'),
+('CABL-0018', 'Cable Canon (7 mts.)', 'Cable', 'Guardado', '7 m'),
+('CABL-0019', 'Cable Canon (7 mts.)', 'Cable', 'Guardado', '7 m'),
+('CABL-0020', 'Cable Canon (7 mts.)', 'Cable', 'Guardado', '7 m'),
+('CABL-0021', 'Cable Canon (7 mts.)', 'Cable', 'Guardado', '7 m'),
+('CABL-0022', 'Cable Canon (7 mts.)', 'Cable', 'Guardado', '7 m'),
+('CABL-0023', 'Cable Canon (7 mts.)', 'Cable', 'Guardado', '7 m'),
+('CABL-0024', 'Cable Canon (1 mts.)', 'Cable', 'Guardado', '1 m'),
+('CABL-0025', 'Cable Canon (5 mts.)', 'Cable', 'Guardado', '5 m'),
+('CABL-0026', 'Cable Canon (18 mts.)', 'Cable', 'Guardado', '18 m'),
+('CABL-0027', 'Cable Canon (2 mts.)', 'Cable', 'Guardado', '2 m'),
+('CABL-0028', 'Cable Canon (21 mts.)', 'Cable', 'Guardado', '21 m'),
+('CABL-0029', 'Cable Canon (4 mts.)', 'Cable', 'Guardado', '4 m'),
+('CABL-0030', 'Cable Canon (9 mts.)', 'Cable', 'Guardado', '9 m');
+
+INSERT INTO items (code, name, category, status, notes) VALUES
+('ANVI-0001', 'Anvil de Cables', 'Anvil', 'Guardado', '');
