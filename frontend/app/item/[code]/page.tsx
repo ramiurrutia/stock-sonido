@@ -144,7 +144,10 @@ useEffect(() => {
             <div className="">
                 <div className="flex flex-col rounded-lg p-4 bg-linear-to-tl from-zinc-900 to-zinc-800 ring ring-zinc-600 mb-4">
                     {data.image_url ? (
-                        <Image src={data.image_url} alt={data.name} className="rounded-lg" width={400} height={400} />
+                        <div className="flex w-full h-full justify-center items-center">
+                        <Image src={`${process.env.NEXT_PUBLIC_API_URL}${data.image_url}`} alt={data.name} className="rounded-lg" width={250} height={250} />
+
+                        </div>
                     ) : (
                         <p className="text-center">Imagen no encontrada</p>
                     )}
