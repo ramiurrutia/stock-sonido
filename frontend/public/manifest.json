@@ -16,7 +16,7 @@
     }
   ],
   "orientation": "portrait",
-  "display": "fullscreen",
+  "display": "standalone",
   "dir": "auto",
   "lang": "es-ES",
   "name": "Audio Bahía Blanca",
