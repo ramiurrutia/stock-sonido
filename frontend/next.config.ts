@@ -4,15 +4,12 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'http',
-        hostname: 'localhost',
-        port: '4000',
+        protocol: 'https',
+        hostname: 'stock-sonido-production.up.railway.app/',
+        port: '8080',
         pathname: '/assets/**',
       },
     ],
-    // Agregar esto para desarrollo:
-    dangerouslyAllowSVG: true,
-    unoptimized: process.env.NODE_ENV === 'development',
   },
 };
 
