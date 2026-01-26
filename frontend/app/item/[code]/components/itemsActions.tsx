@@ -18,7 +18,7 @@ export default function ItemActions({
     const changeStatus = async (newStatus: string) => {
         const result = await Swal.fire({
             title: "¿Confirmar cambios?",
-            html: `<p>Vas a cambiar el estado de: ${currentStatus} a ${newStatus}</p>`,
+            html: `<p>Vas a cambiar el estado de <span style="font-weight: 600;">${currentStatus}</span> a <span style="font-weight: 600;">${newStatus}</span></p>`,
             showCancelButton: true,
             confirmButtonText: "Confirmar",
             cancelButtonText: "Cancelar",
