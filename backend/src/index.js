@@ -6,6 +6,7 @@ import { PORT, FRONTEND_URL } from "./config.js";
 import itemRoutes from "./routes/items.routes.js";
 import anvil_contentsRoutes from "./routes/anvil_contents.routes.js";
 import movementsRoutes from "./routes/movements.routes.js";
+import { pool } from "../db.js";
 
 const app = express();
 
@@ -25,6 +26,9 @@ app.use(anvil_contentsRoutes);
 app.use(movementsRoutes);
 
 app.listen(PORT, () => {
+  pool.query("SELECT 1")
+  .then(() => console.log("Postgres conectado"))
+  .catch(err => console.error("Error DB:", err));
   console.log("Server on port", PORT);
   console.log("Assets served at: http://localhost:" + PORT + "/assets");
 });
