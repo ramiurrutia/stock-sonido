@@ -6,6 +6,13 @@ body {
   font-family: var(--font-montserrat), system-ui, sans-serif;
 }
 
+* {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
