@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
-import { PORT, FRONTEND_URL } from "./config.js";
+import { PORT } from "./config.js";
 import itemRoutes from "./routes/items.routes.js";
 import anvil_contentsRoutes from "./routes/anvil_contents.routes.js";
 import movementsRoutes from "./routes/movements.routes.js";
@@ -14,7 +14,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.use(cors({
-  origin: FRONTEND_URL
+  origin: process.env.FRONTEND_URL
 }));
 
 app.use(express.json());
