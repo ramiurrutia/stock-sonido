@@ -1,6 +1,9 @@
 import BackButton from "@/app/components/navbar/backButton";
 import NavBar from "@/app/components/navbar/navBar";
 import StatusBadge from "@/app/components/ui/StatusBadge";
+
+export const dynamic = "force-dynamic";
+
 interface Movement {
   id: number;
   item_id: number;
