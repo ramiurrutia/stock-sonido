@@ -6,7 +6,7 @@ import { PORT, FRONTEND_URL } from "./config.js";
 import itemRoutes from "./routes/items.routes.js";
 import anvil_contentsRoutes from "./routes/anvil_contents.routes.js";
 import movementsRoutes from "./routes/movements.routes.js";
-import { pool } from "../db.js";
+import { pool } from "./db.js";
 
 const app = express();
 
