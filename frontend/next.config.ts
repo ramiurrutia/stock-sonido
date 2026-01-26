@@ -5,8 +5,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'stock-sonido-production.up.railway.app/',
-        port: '8080',
+        hostname: 'stock-sonido-production.up.railway.app',
         pathname: '/assets/**',
       },
     ],
