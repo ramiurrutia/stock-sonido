@@ -9,7 +9,7 @@ export default function Logout() {
   const { status } = useSession();
 
   if (status !== "authenticated") {
-    return <span className="text-sm text-zinc-500 underline underline-offset-2" onClick={()=> router.push("/")}>Seguir sin iniciar sesión</span>
+    return <span className="text-zinc-200 underline underline-offset-2" onClick={()=> router.push("/")}>Seguir sin iniciar sesión</span>
   }
 
   return (

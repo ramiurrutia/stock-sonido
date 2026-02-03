@@ -9,10 +9,8 @@ export default function PermissionsRefresher() {
 
   useEffect(() => {
     const refreshPermissions = async () => {
-      // Solo ejecutar una vez
       if (hasRefreshed.current) return;
 
-      // Esperar a que la sesión cargue
       if (status === "loading") {
         console.log("⏳ Cargando sesión...");
         return;
@@ -25,7 +23,7 @@ export default function PermissionsRefresher() {
 
       if (status === "authenticated" && session?.user?.accessToken) {
         console.log("🔄 Refrescando permisos...");
-        hasRefreshed.current = true; // ✅ Marcar como refrescado
+        hasRefreshed.current = true;
         const result = await update();
         console.log("✅ Permisos actualizados:", result);
       }

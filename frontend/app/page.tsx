@@ -10,7 +10,6 @@ export default function Home() {
   const router = useRouter()
 
   return (
-
     <main className="flex flex-col items-center justify-center p-6 h-screen w-screen">
       <Header />
 

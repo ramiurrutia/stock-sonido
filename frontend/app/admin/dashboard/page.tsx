@@ -2,6 +2,7 @@
 
 import BackButton from "@/app/components/navbar/backButton";
 import NavBar from "@/app/components/navbar/navBar";
+import PermissionsRefresher from "@/app/components/PermissionRefresher";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
@@ -112,6 +113,7 @@ export default function DashboardPage() {
 
     return (
             <div className="flex flex-col justify-center min-h-screen text-zinc-200 p-4 items-center">
+                <PermissionsRefresher />
                 <BackButton />
                 <NavBar />
 
