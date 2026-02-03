@@ -3,6 +3,8 @@
 import axios from "axios";
 import Swal from "sweetalert2";
 import { StatusButton } from "./statusButton";
+import { useUser } from "@/app/hooks/useUser";
+import { useSession } from "next-auth/react";
 
 
 
@@ -15,7 +17,11 @@ export default function ItemActions({
     currentStatus: string;
     onStatusChange?: () => void;
 }) {
+    const { name } = useUser();
+    const { data: session } = useSession();
+
     const changeStatus = async (newStatus: string) => {
+        if (!session?.user?.accessToken) return;
         const result = await Swal.fire({
             title: "¿Confirmar cambios?",
             html: `<p>Vas a cambiar el estado de <span style="font-weight: 600;">${currentStatus}</span> a <span style="font-weight: 600;">${newStatus}</span></p>`,
@@ -27,10 +33,13 @@ export default function ItemActions({
 
         if (result.isConfirmed) {
             try {
-                const userName = localStorage.getItem('userName')
                 await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/items/${code}/status`, {
-                    status: newStatus, userName: userName 
-                });
+                    status: newStatus, userName: name 
+                },{
+          headers: {
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+        });
 
                 if (onStatusChange) {
                     onStatusChange();

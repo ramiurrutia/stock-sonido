@@ -6,7 +6,11 @@ import { PORT } from "./config.js";
 import itemRoutes from "./routes/items.routes.js";
 import anvil_contentsRoutes from "./routes/anvil_contents.routes.js";
 import movementsRoutes from "./routes/movements.routes.js";
+import authRoutes from "./routes/auth.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
 import { pool } from "./db.js";
+import { checkPermission } from "./middlewares/checkPermission.js";
+import { auth } from "./middlewares/auth.js";
 
 const app = express();
 
@@ -24,6 +28,11 @@ app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.use(itemRoutes);
 app.use(anvil_contentsRoutes);
 app.use(movementsRoutes);
+app.use(authRoutes);
+app.use(adminRoutes);
+
+app.use(checkPermission)
+app.use(auth)
 
 app.listen(PORT, () => {
   pool.query("SELECT 1")

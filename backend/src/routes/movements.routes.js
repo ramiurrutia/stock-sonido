@@ -1,9 +1,11 @@
 import express from "express";
 import { pool } from "../db.js";
+import { auth } from "../middlewares/auth.js";
+import { checkPermission } from "../middlewares/checkPermission.js";
 
 const router = express.Router();
 
-router.get("/stats", async (req, res) => {
+router.get("/stats", auth, checkPermission("admin.access"), async (req, res) => {
   try {
     const query = `
       SELECT 
@@ -23,8 +25,6 @@ router.get("/stats", async (req, res) => {
 
     const result = await pool.query(query);
     
-    // Postgres devuelve un array en rows, tomamos el primero
-    // Nos aseguramos de devolver el objeto con las claves exactas
     const stats = result.rows[0];
 
     res.json(stats);
@@ -34,7 +34,7 @@ router.get("/stats", async (req, res) => {
   }
 });
 
-router.get("/logs", async (req, res) => {
+router.get("/logs", auth, checkPermission("admin.access"), async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT m.*, i.name as item_name, i.code as item_code 

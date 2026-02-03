@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
+import { Providers } from "./provider";
+import PermissionsRefresher from "./components/PermissionRefresher";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -20,8 +22,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
+      <head>
+        <script
+          src="https://accounts.google.com/gsi/client"
+          async
+          defer
+        />
+      </head>
       <body className={`${montserrat.className} antialiased`}>
-        {children}
+        <Providers>
+          <PermissionsRefresher />
+          {children}
+        </Providers>
       </body>
     </html>
   );

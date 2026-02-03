@@ -10,7 +10,8 @@ import { BsLink45Deg, BsTrash } from "react-icons/bs";
 import Swal from "sweetalert2";
 import BackButton from "@/app/components/navbar/backButton";
 import NavBar from "@/app/components/navbar/navBar"
-import Loading from "../loading";
+import Loading from "@/app/loading";
+import { useSession } from "next-auth/react";
 
 
 
@@ -50,6 +51,10 @@ export default function AnvilPage() {
   const code = params.code as string;
   const [data, setData] = useState<AnvilData | null>(null);
   const [loading, setLoading] = useState(true);
+  const { data: session, status } = useSession();
+  const permissions = session?.user?.permissions || [];
+  const canAddItem = permissions.includes("anvil.add_item");
+  const canRemoveItem = permissions.includes("anvil.remove_item");
 
   // Para el buscador de items
   const [search, setSearch] = useState("");
@@ -107,15 +112,23 @@ export default function AnvilPage() {
 
   // Agregar item al anvil
   const addItemToAnvil = async (item: SearchItem) => {
-    if (!data) return;
+    if (!data || !session?.user?.accessToken) return;
 
     setIsAdding(true);
     try {
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/anvils/add`, {
-        anvil_id: data.anvil.id,
-        item_id: item.id,
-        notes: null
-      });
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/anvils/add`,
+        {
+          anvil_id: data.anvil.id,
+          item_id: item.id,
+          notes: null,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+        }
+      );
 
       // Limpiar búsqueda y refrescar
       setSearch("");
@@ -135,6 +148,7 @@ export default function AnvilPage() {
   // Eliminar item del anvil
   const removeItemFromAnvil = async (itemId: number, itemName: string) => {
     if (!data) return;
+    if (status !== "authenticated" || !session?.user?.accessToken) return;
     const result = await Swal.fire({
       text: `¿Eliminar ${itemName} del anvil?`,
       showConfirmButton: true,
@@ -146,7 +160,14 @@ export default function AnvilPage() {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/anvils/${data.anvil.id}/items/${itemId}`);
+        await axios.delete(
+          `${process.env.NEXT_PUBLIC_API_URL}/anvils/${data.anvil.id}/items/${itemId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${session.user.accessToken}`,
+            },
+          }
+        );
         await fetchAnvil();
         Swal.fire({
           title: `${itemName} eliminado del anvil`,
@@ -216,8 +237,11 @@ export default function AnvilPage() {
             <h2 className="font-bold text-lg text-zinc-200">{data.anvil.name}</h2>
             <p className="font-medium text-sm text-zinc-400 tracking-wider">{data.anvil.code}</p>
           </div>
+          <div className="flex justify-between items-center">
           <h3 className="text-sm text-zinc-400 mt-2">Estado</h3>
           <p><StatusBadge status={data.anvil.status} /></p>
+          </div>
+
 
           {data.anvil.notes && (
             <div>
@@ -228,60 +252,65 @@ export default function AnvilPage() {
         </div>
 
 
-        <div className="my-2">
-          <h3 className="text-sm mb-1 text-center">Agregar item al anvil</h3>
-          <Combobox
-            onChange={(item: SearchItem | null) => {
-              if (item) addItemToAnvil(item);
-            }}
-            disabled={isAdding}
-          >
-            <div className="relative">
-              <Combobox.Input
-                className="rounded-lg bg-zinc-900 focus:bg-zinc-800 focus:ring-1 focus:ring-zinc-700 w-full py-2 text-center text-sm/6 text-zinc-200 focus:not-data-focus:outline-none data-focus:outline-none transition-all"
-                placeholder="Buscar item para agregar"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                disabled={isAdding}
-                autoComplete="off"
-              />
+        {canAddItem && (
+          <div className="my-2">
+            <h3 className="text-sm mb-1 text-center">Agregar item al anvil</h3>
+            <Combobox
+              onChange={(item: SearchItem | null) => {
+                if (item) addItemToAnvil(item);
+              }}
+              disabled={isAdding}
+            >
+              <div className="relative">
+                <Combobox.Input
+                  className="rounded-lg bg-zinc-900 focus:bg-zinc-800 focus:ring-1 focus:ring-zinc-700 w-full py-2 text-center text-sm/6 text-zinc-200 focus:not-data-focus:outline-none data-focus:outline-none transition-all"
+                  placeholder="Buscar item para agregar"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  disabled={isAdding}
+                  autoComplete="off"
+                />
 
-              {searchResults.length > 0 && (
-                <Combobox.Options className="absolute z-10 mt-1 w-full rounded-lg shadow-lg bg-zinc-800 max-h-60 overflow-auto">
-                  {searchResults.map((item) => (
-                    <Combobox.Option
-                      key={item.id}
-                      value={item}
-                      className="cursor-pointer px-2 py-2 hover:bg-zinc-700 transition-colors"
-                    >
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <p className="text-zinc-200 text-sm">{item.name}</p>
-                          <p className="text-sm text-zinc-400">{item.code}</p>
+                {searchResults.length > 0 && (
+                  <Combobox.Options className="absolute z-10 mt-1 w-full rounded-lg shadow-lg bg-zinc-800 max-h-60 overflow-auto">
+                    {searchResults.map((item) => (
+                      <Combobox.Option
+                        key={item.id}
+                        value={item}
+                        className="cursor-pointer px-2 py-2 hover:bg-zinc-700 transition-colors"
+                      >
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="text-zinc-200 text-sm">{item.name}</p>
+                            <p className="text-sm text-zinc-400">{item.code}</p>
+                          </div>
+                          <StatusBadge status={item.status} />
                         </div>
-                        <StatusBadge status={item.status} />
-                      </div>
-                    </Combobox.Option>
-                  ))}
-                </Combobox.Options>
-              )}
-            </div>
-          </Combobox>
-        </div>
+                      </Combobox.Option>
+                    ))}
+                  </Combobox.Options>
+                )}
+              </div>
+            </Combobox>
+          </div>
+        )}
 
         <div className="space-y-4 border-t border-zinc-600 pt-2">
+          {data.items.length === 0 || <h3 className="m-0 p-0 text-center text-zinc-400">Contiene</h3>}    
           {data.items.map((item) => (
-            <div key={item.id} className="border border-zinc-700 rounded-lg p-4 flex justify-between items-start">
+            <div key={item.id} className="border border-zinc-700 rounded-lg py-2 px-4 flex justify-between items-start">
               <div>
                 <h3 className="font-semibold flex flex-row items-center underline underline-offset-2 mb-1" onClick={() => { router.push(`/item/${item.code}`) }}>{item.name}<BsLink45Deg className="size-6 ml-1" /></h3>
-                <p className="text-zinc-400 text-[12px]">{item.code} | {item.category} <StatusBadge status={item.status} /></p>
+                <p className="text-zinc-400 text-[12px] flex flex-row justify-between items-center">{item.code} | {item.category} <StatusBadge status={item.status} /></p>
               </div>
-              <button
-                onClick={() => removeItemFromAnvil(item.id, item.name)}
-                className="text-zinc-200 hover:text-zinc-500 rounded transition-colors ml-8"
-              >
-                <BsTrash className="size-5" />
-              </button>
+              {canRemoveItem && (
+                <button
+                  onClick={() => removeItemFromAnvil(item.id, item.name)}
+                  className="text-zinc-200 hover:text-zinc-500 rounded transition-colors ml-8"
+                >
+                  <BsTrash className="size-5" />
+                </button>
+              )}
             </div>
           ))}
         </div>

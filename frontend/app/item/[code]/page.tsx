@@ -1,6 +1,6 @@
 "use client";
 
-import Loading from "./loading"
+import Loading from "@/app/loading";
 import axios from "axios";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
@@ -10,6 +10,7 @@ import ItemsActions from "./components/itemsActions";
 import BackButton from "@/app/components/navbar/backButton";
 import NavBar from "@/app/components/navbar/navBar";
 import Swal from "sweetalert2";
+import { useSession } from "next-auth/react";
 
 interface ItemData {
     id: number;
@@ -35,33 +36,43 @@ export default function ItemPage() {
     const [loading, setLoading] = useState(true);
     const [editingNotes, setEditingNotes] = useState(false);
     const [notes, setNotes] = useState("");
+    const { data: session } = useSession();
+    const permissions = session?.user?.permissions || [];
+    const canChangeStatus = permissions.includes("item.change_status");
+    const canEditItem = permissions.includes("item.edit");
 
-const fetchItem = useCallback(async () => {
-    try {
-        setLoading(true); // Opcional: para mostrar carga al refrescar
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/items/${code}`);
-        setData(response.data);
-        setNotes(response.data.notes || "");
-        
-        if (typeof window !== "undefined") {
-            localStorage.setItem("lastItem", JSON.stringify(response.data));
+    const fetchItem = useCallback(async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/items/${code}`);
+            setData(response.data);
+            setNotes(response.data.notes || "");
+
+            if (typeof window !== "undefined") {
+                localStorage.setItem("lastItem", JSON.stringify(response.data));
+            }
+        } catch (error) {
+            console.error("Error fetching item:", error);
+        } finally {
+            setLoading(false);
         }
-    } catch (error) {
-        console.error("Error fetching item:", error);
-    } finally {
-        setLoading(false);
-    }
-}, [code]);
+    }, [code]);
 
-useEffect(() => {
-    fetchItem();
-}, [fetchItem]);
+    useEffect(() => {
+        fetchItem();
+    }, [fetchItem]);
 
     const saveNotes = async () => {
         if (!data) return;
 
         try {
-            await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/items/${code}`, { notes });
+            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/items/${data.id}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ notes }),
+            });
             await fetchItem();
             setEditingNotes(false);
             Swal.fire({
@@ -97,7 +108,12 @@ useEffect(() => {
         if (result.isConfirmed) {
             try {
                 await axios.delete(
-                    `${process.env.NEXT_PUBLIC_API_URL}/anvils/${data.anvil.id}/items/${data.id}`
+                    `${process.env.NEXT_PUBLIC_API_URL}/anvils/${data.anvil.id}/items/${data.id}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${session?.user?.accessToken}`,
+                        },
+                    }
                 );
                 await fetchItem();
                 Swal.fire({
@@ -124,17 +140,17 @@ useEffect(() => {
 
     if (loading) return <Loading />;
     if (!data) return (<main className="flex flex-col items-center justify-center p-4 h-screen w-screen bg-black">
-      <BackButton />
-      <div className="bg-linear-to-tl from-zinc-900 to-zinc-800 ring-1 ring-zinc-600 p-8 rounded-lg text-center max-w-xs">
-        <h2 className="text-zinc-200 font-bold text-lg mb-2">Algo salió mal</h2>
-        <p className="text-zinc-500 text-sm mb-6">No se encontraron los datos</p>
-        <button 
-          onClick={() => window.location.reload()}
-          className="bg-zinc-200 hover:bg-zinc-400 text-zinc-900 px-4 py-2 rounded transition-colors w-full"
-        >
-          Reintentar
-        </button>
-      </div>
+        <BackButton />
+        <div className="bg-linear-to-tl from-zinc-900 to-zinc-800 ring-1 ring-zinc-600 p-8 rounded-lg text-center max-w-xs">
+            <h2 className="text-zinc-200 font-bold text-lg mb-2">Algo salió mal</h2>
+            <p className="text-zinc-500 text-sm mb-6">No se encontraron los datos</p>
+            <button
+                onClick={() => window.location.reload()}
+                className="bg-zinc-200 hover:bg-zinc-400 text-zinc-900 px-4 py-2 rounded transition-colors w-full"
+            >
+                Reintentar
+            </button>
+        </div>
     </main>)
 
     return (
@@ -145,7 +161,7 @@ useEffect(() => {
                 <div className="flex flex-col rounded-lg p-4 bg-linear-to-tl from-zinc-900 to-zinc-800 ring ring-zinc-600 mb-4">
                     {data.image_url ? (
                         <div className="flex w-full h-full justify-center items-center">
-                        <Image src={`${process.env.NEXT_PUBLIC_API_URL}${data.image_url}`} alt={data.name} className="rounded-lg" width={250} height={250} />
+                            <Image src={`${process.env.NEXT_PUBLIC_API_URL}${data.image_url}`} alt={data.name} className="rounded-lg" width={250} height={250} />
 
                         </div>
                     ) : (
@@ -191,7 +207,7 @@ useEffect(() => {
                     <div className="mt-3">
                         <div className="flex justify-between items-center mb-1">
                             <h3 className="text-sm text-zinc-400">Notas</h3>
-                            {!editingNotes && (
+                            {canEditItem && !editingNotes && (
                                 <button
                                     onClick={() => setEditingNotes(true)}
                                     className="text-xs text-zinc-200 hover:text-zinc-400 transition-colors underline underline-offset-2"
@@ -229,15 +245,18 @@ useEffect(() => {
                                 </div>
                             </div>
                         ) : (
-                            <p className="text-zinc-200 text-sm">{data.notes || "Sin notas"}</p>
+                            <p className="text-zinc-200 text-sm p-2 rounded-lg bg-zinc-950/30">{data.notes || "Sin notas"}</p>
                         )}
                     </div>
                 </div>
-                <ItemsActions
-                    code={data.code}
-                    currentStatus={data.status}
-                    onStatusChange={fetchItem}
-                />
+                {canChangeStatus &&
+                    <ItemsActions
+                        code={data.code}
+                        currentStatus={data.status}
+                        onStatusChange={fetchItem}
+                    />
+                }
+
             </div>
         </main>
     );

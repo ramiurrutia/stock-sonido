@@ -27,9 +27,8 @@ export default function Home() {
           textButton="Anviles"
           onClick={() => { router.push(`/anvil`) }} />
       </div>
-      <AdminShortcuts />
       <LastItem />
-
+      <AdminShortcuts />
     </main>
   );
 }

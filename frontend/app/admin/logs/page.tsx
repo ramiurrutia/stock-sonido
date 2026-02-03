@@ -1,8 +1,10 @@
+"use client";
+
 import BackButton from "@/app/components/navbar/backButton";
 import NavBar from "@/app/components/navbar/navBar";
 import StatusBadge from "@/app/components/ui/StatusBadge";
-
-export const dynamic = "force-dynamic";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 
 interface Movement {
   id: number;
@@ -18,21 +20,87 @@ interface Movement {
   created_at: string;
 }
 
-async function getMovements(): Promise<Movement[]> {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/logs`, {
-      cache: 'no-store'
-    });
-    if (!res.ok) return [];
-    return res.json();
-  } catch (error) {
-    throw new Error("Error fetching logs:" + error);
-    return [];
-  }
-}
+export default function LogsPage() {
+  const { data: session, status } = useSession();
+  const [movements, setMovements] = useState<Movement[]>([]);
+  const [loading, setLoading] = useState(true);
 
-export default async function LogsPage() {
-  const movements = await getMovements();
+  const isAdmin =
+    status === "authenticated" &&
+    session?.user?.permissions?.includes("admin.access");
+
+  useEffect(() => {
+    if (!isAdmin || !session?.user?.accessToken) {
+      setLoading(false);
+      return;
+    }
+
+    const fetchMovements = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/logs`, {
+          headers: {
+            Authorization: `Bearer ${session.user.accessToken}`,
+          },
+          cache: "no-store",
+        });
+        if (!res.ok) {
+          setMovements([]);
+          return;
+        }
+        const data = await res.json();
+        setMovements(data);
+      } catch (error) {
+        console.error("Error fetching logs:", error);
+        setMovements([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMovements();
+  }, [isAdmin, session]);
+
+  if (status === "loading" || loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen text-zinc-500 bg-black">
+        <div role="status">
+          <svg
+            className="mx-auto size-8 animate-spin text-zinc-100"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="flex flex-col justify-center items-center min-h-screen bg-black text-zinc-200">
+        <h1 className="text-xl font-bold text-red-500">Acceso Denegado</h1>
+        <p className="text-zinc-500">
+          Tu usuario no tiene el permiso{" "}
+          <span className="text-red-400">admin.access</span>
+        </p>
+        <BackButton />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col justify-center min-h-screen bg-black text-white">

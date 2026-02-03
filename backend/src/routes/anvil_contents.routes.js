@@ -1,14 +1,14 @@
 import express from "express";
 import { pool } from "../db.js";
+import { auth } from "../middlewares/auth.js";
+import { checkPermission } from "../middlewares/checkPermission.js";
 
 const router = express.Router();
 
-// GET: Obtener anvil con todos sus items
 router.get("/anvils/:code", async (req, res) => {
   try {
     const { code } = req.params;
 
-    // Verificar que sea un anvil válido
     const anvilCheck = await pool.query(
       `SELECT * FROM items WHERE code = $1 AND category = 'Anvil'`,
       [code],
@@ -20,7 +20,6 @@ router.get("/anvils/:code", async (req, res) => {
 
     const anvil = anvilCheck.rows[0];
 
-    // Obtener todos los items dentro del anvil
     const itemsResult = await pool.query(
       `SELECT 
         i.id,
@@ -40,7 +39,6 @@ router.get("/anvils/:code", async (req, res) => {
       [anvil.id],
     );
 
-    // Respuesta estructurada
     res.json({
       anvil: {
         id: anvil.id,
@@ -59,12 +57,10 @@ router.get("/anvils/:code", async (req, res) => {
   }
 });
 
-// POST: Agregar item a un anvil
-router.post("/anvils/add", async (req, res) => {
+router.post("/anvils/add", auth, checkPermission("anvil.add_item"), async (req, res) => {
   try {
     const { anvil_id, item_id, notes } = req.body;
 
-    // Verificar que el anvil existe y es categoría Anvil
     const anvilCheck = await pool.query(
       `SELECT * FROM items WHERE id = $1 AND category = 'Anvil'`,
       [anvil_id],
@@ -74,7 +70,6 @@ router.post("/anvils/add", async (req, res) => {
       return res.status(404).json({ error: "Anvil not found" });
     }
 
-    // Verificar que el item existe
     const itemCheck = await pool.query(`SELECT * FROM items WHERE id = $1`, [
       item_id,
     ]);
@@ -83,7 +78,6 @@ router.post("/anvils/add", async (req, res) => {
       return res.status(404).json({ error: "Item not found" });
     }
 
-    // Verificar que el item no esté ya en otro anvil
     const existingContent = await pool.query(
       `SELECT * FROM anvil_contents WHERE item_id = $1`,
       [item_id],
@@ -96,7 +90,6 @@ router.post("/anvils/add", async (req, res) => {
       });
     }
 
-    // Insertar en anvil_contents
     const result = await pool.query(
       `INSERT INTO anvil_contents (anvil_id, item_id, notes, moved_at)
        VALUES ($1, $2, $3, NOW())
@@ -104,7 +97,6 @@ router.post("/anvils/add", async (req, res) => {
       [anvil_id, item_id, notes || null],
     );
 
-    // Registrar movimiento
     await pool.query(
       `INSERT INTO movements (item_id, anvil_id, action, new_status)
        VALUES ($1, $2, 'assign_anvil', 'Guardado')`,
@@ -118,12 +110,10 @@ router.post("/anvils/add", async (req, res) => {
   }
 });
 
-// DELETE: Quitar item de un anvil
-router.delete("/anvils/:anvilId/items/:itemId", async (req, res) => {
+router.delete("/anvils/:anvilId/items/:itemId", auth, checkPermission("anvil.remove_item"), async (req, res) => {
   try {
     const { anvilId, itemId } = req.params;
 
-    // Verificar que existe la relación
     const existingContent = await pool.query(
       `SELECT * FROM anvil_contents WHERE anvil_id = $1 AND item_id = $2`,
       [anvilId, itemId],
@@ -133,13 +123,11 @@ router.delete("/anvils/:anvilId/items/:itemId", async (req, res) => {
       return res.status(404).json({ error: "Item not found in this anvil" });
     }
 
-    // Eliminar de anvil_contents
     await pool.query(
       `DELETE FROM anvil_contents WHERE anvil_id = $1 AND item_id = $2`,
       [anvilId, itemId],
     );
 
-    // Registrar movimiento
     await pool.query(
       `INSERT INTO movements (item_id, anvil_id, action, new_status)
        VALUES ($1, $2, 'remove_anvil', 'Guardado')`,
@@ -153,7 +141,6 @@ router.delete("/anvils/:anvilId/items/:itemId", async (req, res) => {
   }
 });
 
-// GET: Obtener todos los anvils
 router.get("/anvils", async (req, res) => {
   try {
     const { rows } = await pool.query(
