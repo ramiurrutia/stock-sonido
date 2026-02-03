@@ -121,7 +121,6 @@ export default function UserManagementPage() {
 
   return (
     <div className="min-h-screen min-w-screen text-zinc-200 p-4">
-      <PermissionsRefresher />
       <BackButton />
       <div className="max-w-5xl mx-auto flex flex-col justify-center items-center mt-12">
         <h1 className="text-2xl font-bold tracking-tight mb-4">Gestión de Usuarios</h1>

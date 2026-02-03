@@ -113,7 +113,6 @@ export default function DashboardPage() {
 
     return (
             <div className="flex flex-col justify-center min-h-screen text-zinc-200 p-4 items-center">
-                <PermissionsRefresher />
                 <BackButton />
                 <NavBar />
 

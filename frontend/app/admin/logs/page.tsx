@@ -105,7 +105,6 @@ export default function LogsPage() {
 
   return (
     <div className="flex flex-col justify-center min-h-screen bg-black text-white">
-      <PermissionsRefresher />
       <BackButton />
       <NavBar />
 
