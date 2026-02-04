@@ -2,7 +2,6 @@
 
 import BackButton from "@/app/components/navbar/backButton";
 import NavBar from "@/app/components/navbar/navBar";
-import PermissionsRefresher from "@/app/components/PermissionRefresher";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
