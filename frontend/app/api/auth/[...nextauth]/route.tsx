@@ -1,6 +1,33 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
+type BackendAuthPayload = {
+  token: string;
+  user: {
+    id: number;
+    permissions: string[];
+  };
+};
+
+async function issueBackendToken(params: {
+  email?: string | null;
+  name?: string | null;
+  googleId?: string | null;
+}): Promise<BackendAuthPayload | null> {
+  const { email, name, googleId } = params;
+
+  if (!email || !name || !googleId) return null;
+
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/google`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, name, googleId }),
+  });
+
+  if (!res.ok) return null;
+  return res.json();
+}
+
 const handler = NextAuth({
   providers: [
     GoogleProvider({
@@ -11,73 +38,77 @@ const handler = NextAuth({
   session: { strategy: "jwt" },
   callbacks: {
     async signIn({ user, account }) {
-      if (account?.provider === "google") {
-        try {
-          const googleId =
-            account.providerAccountId || (user.id as string | undefined);
+      if (account?.provider !== "google") return true;
 
-          if (!googleId || !user.email || !user.name) {
-            console.error("Google signIn missing fields", {
-              googleId,
-              email: user.email,
-              name: user.name,
-            });
-            return false;
-          }
+      try {
+        const googleId = account.providerAccountId || (user.id as string | undefined);
 
-          // Llamamos a TU endpoint
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/google`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              email: user.email,
-              name: user.name,
-              googleId, // ID real de Google (sub)
-            }),
+        if (!googleId || !user.email || !user.name) {
+          console.error("Google signIn missing fields", {
+            googleId,
+            email: user.email,
+            name: user.name,
           });
-
-          if (res.ok) {
-            const data = await res.json();
-
-            // Guardamos lo que devuelve tu backend
-            user.accessToken = data.token;
-            user.permissions = data.user.permissions; // Tu backend devuelve permisos, no roles directos
-            user.dbId = data.user.id; // Guardamos el ID de tu base de datos por si acaso
-
-            return true;
-          }
-          return false;
-        } catch (error) {
-          console.error("Error conectando con backend:", error);
           return false;
         }
+
+        const data = await issueBackendToken({
+          email: user.email,
+          name: user.name,
+          googleId,
+        });
+
+        if (!data) return false;
+
+        user.accessToken = data.token;
+        user.permissions = data.user.permissions;
+        user.dbId = data.user.id;
+        user.googleId = googleId;
+        return true;
+      } catch (error) {
+        console.error("Error conectando con backend:", error);
+        return false;
       }
-      return true;
     },
 
     async jwt({ token, user, trigger }) {
-      // Login normal
       if (user) {
         token.accessToken = user.accessToken;
         token.permissions = user.permissions;
         token.dbId = user.dbId;
+        token.googleId = user.googleId;
+        token.email = user.email;
+        token.name = user.name;
       }
 
-      // 🔁 ESTO ES fetchMe
-      if (trigger === "update" && token.accessToken) {
+      // update() desde cliente: valida token y renueva si quedo invalido
+      if (trigger === "update") {
         try {
-          const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/auth/me`,
-            {
+          let meRes: Response | null = null;
+
+          if (token.accessToken) {
+            meRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
               headers: {
                 Authorization: `Bearer ${token.accessToken}`,
               },
-            }
-          );
+            });
+          }
 
-          if (res.ok) {
-            const data = await res.json();
-            token.permissions = data.permissions;
+          if (meRes?.ok) {
+            const me = await meRes.json();
+            token.permissions = me.permissions;
+          } else if (!meRes || meRes.status === 401 || meRes.status === 403) {
+            const renewed = await issueBackendToken({
+              email: (token.email as string | undefined) ?? null,
+              name: (token.name as string | undefined) ?? null,
+              googleId: (token.googleId as string | undefined) ?? null,
+            });
+
+            if (renewed?.token) {
+              token.accessToken = renewed.token;
+              token.permissions = renewed.user.permissions || [];
+              token.dbId = renewed.user.id;
+            }
           }
         } catch (e) {
           console.error("Error en fetchMe:", e);
@@ -86,6 +117,7 @@ const handler = NextAuth({
 
       return token;
     },
+
     async session({ session, token }) {
       session.user.accessToken = token.accessToken as string;
       session.user.permissions = token.permissions as string[];

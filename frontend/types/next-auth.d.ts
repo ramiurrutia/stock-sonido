@@ -7,6 +7,7 @@ declare module "next-auth" {
     accessToken?: string;
     permissions?: string[];
     dbId?: number;
+    googleId?: string;
   }
 
   // 2. Extendemos la Sesión (lo que usas en el frontend con useSession)
@@ -25,5 +26,6 @@ declare module "next-auth/jwt" {
     accessToken?: string;
     permissions?: string[];
     dbId?: number;
+    googleId?: string;
   }
 }

@@ -21,8 +21,8 @@ export default function PermissionsRefresher() {
         return;
       }
 
-      if (status === "authenticated" && session?.user?.accessToken) {
-        console.log("🔄 Refrescando permisos...");
+      if (status === "authenticated") {
+        console.log("🔄 Refrescando sesión y permisos...");
         hasRefreshed.current = true;
         const result = await update();
         console.log("✅ Permisos actualizados:", result);
