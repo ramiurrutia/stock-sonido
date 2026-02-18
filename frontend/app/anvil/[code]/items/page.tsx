@@ -146,7 +146,7 @@ export default function AnvilItemsPage() {
         <div className="grid grid-cols-2 gap-2">
           {data.items.length === 0 && <p className="text-zinc-500 text-center">Este anvil no tiene items.</p>}
           {data.items.map((item) => (
-            <div key={item.id} className="border border-zinc-700 rounded-lg p-2 flex justify-between items-start">
+            <div key={item.id} className="border border-zinc-700 rounded-lg p-2 flex justify-between items-center">
               <div>
                 <h3
                   className="flex flex-row items-center underline underline-offset-2 cursor-pointer text-sm w-32 truncate"
@@ -158,15 +158,15 @@ export default function AnvilItemsPage() {
                 </h3>
                 <div className="flex flex-row items-center justify-between">
                   <p className="text-zinc-400 text-sm font-mono">{item.code}</p>
-                  <span className={`size-2 rounded-full ${getStatusDotClass(item.status)}`} />
+                  <span className={`size-1.5 rounded-full ${getStatusDotClass(item.status)}`} />
                 </div>
               </div>
               {canRemoveItem && (
                 <button
                   onClick={() => removeItemFromAnvil(item.id, item.name)}
-                  className="text-zinc-200 hover:text-zinc-500 rounded transition-colors ml-8"
+                  className="text-zinc-200 hover:text-zinc-500 rounded transition-colors ml-2"
                 >
-                  <BsTrash className="size-5" />
+                  <BsTrash className="size-4" />
                 </button>
               )}
             </div>
