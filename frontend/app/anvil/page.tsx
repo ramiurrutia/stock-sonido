@@ -39,7 +39,7 @@ export default async function AnvilsPage() {
           <Link 
             href={`/anvil/${anvil.code}`}
             key={anvil.id} 
-            className="flex flex-col bg-linear-to-tl from-zinc-900 to-zinc-800 ring-1 p-4 rounded-lg ring-zinc-600 mb-4 min-w-80"
+            className="flex flex-col bg-linear-to-tl from-zinc-900 to-zinc-800 ring-1 p-4 rounded-lg ring-zinc-600 mb-4 w-90"
           >
             <div className="flex flex-row justify-between items-center mb-1 border-b border-zinc-600">
               <h2 className="text-center flex flex-row underline underline-offset-2">{anvil.name}<BsLink45Deg className="size-6 ml-1" /></h2>

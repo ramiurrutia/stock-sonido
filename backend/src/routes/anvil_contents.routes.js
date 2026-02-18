@@ -141,6 +141,86 @@ router.delete("/anvils/:anvilId/items/:itemId", auth, checkPermission("anvil.rem
   }
 });
 
+router.put("/anvils/:code/status", auth, checkPermission("item.change_status"), async (req, res) => {
+  const { code } = req.params;
+  const { status: newStatus } = req.body;
+  const userName = req.user.name;
+  const validStatuses = ["Guardado", "En uso", "Enviado", "Baja"];
+
+  if (!validStatuses.includes(newStatus)) {
+    return res.status(400).json({ error: "Invalid status" });
+  }
+
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    const anvilResult = await client.query(
+      `SELECT id, code, status
+       FROM items
+       WHERE code = $1 AND category = 'Anvil'
+       FOR UPDATE`,
+      [code],
+    );
+
+    if (anvilResult.rows.length === 0) {
+      await client.query("ROLLBACK");
+      return res.status(404).json({ error: "Anvil not found" });
+    }
+
+    const anvil = anvilResult.rows[0];
+
+    const anvilItemsResult = await client.query(
+      `SELECT i.id, i.code, i.status
+       FROM anvil_contents ac
+       JOIN items i ON ac.item_id = i.id
+       WHERE ac.anvil_id = $1
+       FOR UPDATE`,
+      [anvil.id],
+    );
+
+    const targets = [anvil, ...anvilItemsResult.rows];
+    let updatedCount = 0;
+
+    for (const target of targets) {
+      const previousStatus = target.status;
+      if (previousStatus === newStatus) continue;
+
+      await client.query(
+        `UPDATE items
+         SET status = $1
+         WHERE id = $2`,
+        [newStatus, target.id],
+      );
+
+      await client.query(
+        `INSERT INTO movements (item_id, anvil_id, action, previous_status, new_status, user_name)
+         VALUES ($1, $2, 'status_change', $3, $4, $5)`,
+        [target.id, anvil.id, previousStatus, newStatus, userName],
+      );
+
+      updatedCount += 1;
+    }
+
+    await client.query("COMMIT");
+
+    return res.json({
+      success: true,
+      anvil_code: code,
+      status: newStatus,
+      updated_count: updatedCount,
+      items_affected: anvilItemsResult.rows.length,
+    });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("Error updating anvil and item statuses:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  } finally {
+    client.release();
+  }
+});
+
 router.get("/anvils", async (req, res) => {
   try {
     const { rows } = await pool.query(
