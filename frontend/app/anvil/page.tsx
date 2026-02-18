@@ -43,7 +43,7 @@ export default async function AnvilsPage() {
           >
             <div className="flex flex-row justify-between items-center mb-1 border-b border-zinc-600">
               <h2 className="text-center flex flex-row underline underline-offset-2">{anvil.name}<BsLink45Deg className="size-6 ml-1" /></h2>
-              <span className="text-zinc-500 ml-12">{anvil.code}</span>
+              <span className="text-zinc-500 ml-6">{anvil.code}</span>
             </div>
             
             <div className="flex flex-row justify-between">

@@ -34,7 +34,7 @@ export default function AdminShortcuts() {
             <span className="text-sm font-medium text-zinc-300 group-hover:text-white">Usuarios</span>
           </div>
         </Link>
-        <div className="flex items-center justify-center gap-2 p-3 bg-zinc-900/50 hover:bg-zinc-800 border border-zinc-800 hover:border-indigo-500/50 rounded-lg transition-all group w-36 opacity-20">
+        <div className="flex items-center justify-center gap-2 p-3 bg-zinc-900/50 border border-zinc-800 hover:border-indigo-500/50 rounded-lg transition-all group w-36 opacity-20">
         <span className="text-sm">Próximamente</span></div>
       </div>
     </>
