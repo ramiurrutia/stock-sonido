@@ -2,13 +2,22 @@
 
 import BackButton from "@/app/components/navbar/backButton";
 import NavBar from "@/app/components/navbar/navBar";
+import Loading from "@/app/loading";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import {
+    HiOutlineCube,
+    HiOutlineArchiveBox,
+    HiOutlineTruck,
+    HiOutlinePlay,
+    HiOutlineInboxStack,
+    HiOutlineArrowDownTray
+} from "react-icons/hi2";
 
 interface Stats {
     totalItems: number;
     guardados: number;
-    enviados: number
+    enviados: number;
     enUso: number;
     baja: number;
     totalAnvils: number;
@@ -26,7 +35,6 @@ const emptyStats: Stats = {
 export default function DashboardPage() {
     const { data: session, status } = useSession();
     const [stats, setStats] = useState<Stats>(emptyStats);
-    const [loading, setLoading] = useState(true);
 
     const isAdmin =
         status === "authenticated" &&
@@ -34,7 +42,6 @@ export default function DashboardPage() {
 
     useEffect(() => {
         if (!isAdmin || !session?.user?.accessToken) {
-            setLoading(false);
             return;
         }
 
@@ -51,99 +58,146 @@ export default function DashboardPage() {
                 setStats(data);
             } catch (error) {
                 console.error("Error fetching stats:", error);
-            } finally {
-                setLoading(false);
             }
         };
 
         fetchStats();
     }, [isAdmin, session]);
 
-    if (status === "loading" || loading) {
-        return (
-            <div className="flex justify-center items-center min-h-screen text-zinc-500 bg-black">
-                <div role="status">
-                    <svg
-                        className="mx-auto size-8 animate-spin text-zinc-100"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                    >
-                        <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                        ></circle>
-                        <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                    </svg>
-                </div>
-            </div>
-        );
-    }
+    if (status === "loading") return <Loading />;
 
     if (!isAdmin) {
         return (
-            <div className="flex flex-col justify-center items-center min-h-screen bg-black text-zinc-200">
-                <h1 className="text-xl font-bold text-red-500">Acceso Denegado</h1>
-                <p className="text-zinc-500">
-                    Tu usuario no tiene el permiso{" "}
-                    <span className="text-red-400">admin.access</span>
-                </p>
+            <div className="flex flex-col justify-center items-center min-h-screen text-zinc-200 p-6 text-center">
+                <h1 className="text-xl font-bold text-red-500 mb-2">Acceso Denegado</h1>
+                <p className="text-zinc-500 mb-6 text-sm">No tienes permisos para acceder al panel de administración.</p>
                 <BackButton />
             </div>
         );
     }
 
+    const safeTotal = stats.totalItems || 1;
+    const distribution = [
+        { label: "Guardados", value: stats.guardados, color: "bg-emerald-300", text: "text-emerald-300" },
+        { label: "En uso", value: stats.enUso, color: "bg-amber-300", text: "text-amber-300" },
+        { label: "Enviados", value: stats.enviados, color: "bg-sky-400", text: "text-sky-400" },
+        { label: "Baja", value: stats.baja, color: "bg-red-400", text: "text-red-400" },
+    ];
+
     const metrics = [
-        { label: "Items Totales", value: stats.totalItems, color: "text-zinc-200" },
-        { label: "Guardados", value: stats.guardados, color: "text-emerald-400" },
-        { label: "En Uso", value: stats.enUso, color: "text-yellow-200" },
-        { label: "Enviados", value: stats.enviados, color: "text-blue-400" },
-        { label: "Baja", value: stats.baja, color: "text-red-400" },
-        { label: "Anviles", value: stats.totalAnvils, color: "text-zinc-400" },
+        {
+            label: "Items Totales",
+            value: stats.totalItems,
+            icon: <HiOutlineCube />,
+            accent: "from-zinc-100/20 to-zinc-100/0 border-zinc-700",
+            text: "text-white",
+            span: "col-span-2",
+        },
+        {
+            label: "Guardados",
+            value: stats.guardados,
+            icon: <HiOutlineArchiveBox />,
+            accent: "from-emerald-500/20 to-emerald-500/0 border-emerald-500/30",
+            text: "text-emerald-300",
+        },
+        {
+            label: "En uso",
+            value: stats.enUso,
+            icon: <HiOutlinePlay />,
+            accent: "from-amber-400/20 to-amber-400/0 border-amber-400/30",
+            text: "text-amber-300",
+        },
+        {
+            label: "Enviados",
+            value: stats.enviados,
+            icon: <HiOutlineTruck />,
+            accent: "from-sky-500/20 to-sky-500/0 border-sky-500/30",
+            text: "text-sky-400",
+        },
+        {
+            label: "De baja",
+            value: stats.baja,
+            icon: <HiOutlineArrowDownTray />,
+            accent: "from-red-500/20 to-red-500/0 border-red-500/30",
+            text: "text-red-400",
+        },
+        {
+            label: "Anviles",
+            value: stats.totalAnvils,
+            icon: <HiOutlineInboxStack />,
+            accent: "from-zinc-600/20 to-zinc-600/0 border-zinc-700",
+            text: "text-zinc-300",
+            span: "col-span-2",
+        },
     ];
 
     return (
-            <div className="flex flex-col justify-center min-h-screen text-zinc-200 p-4 items-center">
-                <BackButton />
-                <NavBar />
+        <main className="min-h-screen text-zinc-200 p-4 pb-20 flex flex-col items-center">
+            <NavBar />
 
-                <div className="w-full max-w-2xl">
-                    <h1 className="text-2xl font-bold mb-8 text-center">Estado del Inventario</h1>
+            <div className="w-full max-w-2xl mt-16">
+                <div className="flex items-center gap-4 mb-8 justify-center">
+                    <BackButton />
+                    <div className="text-center">
+                        <h1 className="text-4xl font-bold text-zinc-200 tracking-tight">Dashboard</h1>
+                        <p className="text-xs text-zinc-600 uppercase font-semibold">Monitoreo de inventario</p>
+                    </div>
+                </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {metrics.map((m, i) => (
-                            <div key={i} className="bg-linear-to-tl from-zinc-900 to-zinc-800 ring-1 ring-zinc-700 p-6 rounded-lg text-center">
-                                <p className="text-[10px] uppercase tracking-widest text-zinc-500 mb-2">{m.label}</p>
-                                <p className={`text-4xl font-black ${m.color}`}>{m.value}</p>
+                <section className="mb-4 rounded-xl border border-zinc-800 bg-zinc-900/30 p-4">
+                    <div className="flex items-center justify-between text-xs uppercase tracking-wider text-zinc-500 mb-3">
+                        <span>Distribucion de estados</span>
+                        <span>{stats.totalItems} items</span>
+                    </div>
+                    <div className="h-2 w-full rounded-full bg-zinc-800 overflow-hidden flex">
+                        {distribution.map((d) => (
+                            <div
+                                key={d.label}
+                                className={`${d.color} h-full`}
+                                style={{ width: `${(d.value / safeTotal) * 100}%` }}
+                            />
+                        ))}
+                    </div>
+                    <div className="grid grid-cols-2 mt-3 text-sm">
+                        {distribution.map((d) => (
+                            <div key={d.label} className="flex items-center justify-between px-2">
+                                <span className="text-zinc-500">{d.label}</span>
+                                <span className={`font-bold ${d.text}`}>{d.value}</span>
                             </div>
                         ))}
                     </div>
+                </section>
 
-                    {/* Aquí podrías luego agregar un gráfico de barras simple con CSS puro */}
-                    <div className="mt-8 bg-zinc-900/50 p-6 rounded-lg ring-1 ring-zinc-800">
-                        <h3 className="text-sm font-bold mb-4 text-zinc-400">Distribución de Estados</h3>
-                        <div className="flex h-4 w-full bg-zinc-800 rounded-full overflow-hidden">
-                        <div style={{ width: `${stats.totalItems ? (stats.guardados / stats.totalItems) * 100 : 0}%` }} className="bg-emerald-500" />
-                        <div style={{ width: `${stats.totalItems ? (stats.enUso / stats.totalItems) * 100 : 0}%` }} className="bg-yellow-200" />
-                        <div style={{ width: `${stats.totalItems ? (stats.enviados / stats.totalItems) * 100 : 0}%` }} className="bg-blue-500" />
-                        <div style={{ width: `${stats.totalItems ? (stats.baja / stats.totalItems) * 100 : 0}%` }} className="bg-red-500" />
-                    </div>
-                        <div className="flex justify-between mt-2 text-[10px] text-zinc-500 italic">
-                            <span>Guardados</span>
-                            <span>En uso</span>
-                            <span>Enviados</span>
-                            <span>Baja</span>
+                <div className="grid grid-cols-2 gap-4">
+                    {metrics.map((m, i) => (
+                        <div
+                            key={i}
+                            className={`
+                                p-5 rounded-xl border
+                                bg-zinc-900/50 border-zinc-800
+                                ${m.span || "col-span-1"}
+                            `}
+                        >
+                            <div className="flex items-start justify-between">
+                                <div className="flex flex-col gap-1">
+                                    <p className="text-xs uppercase tracking-wider text-zinc-500">
+                                        {m.label}
+                                    </p>
+                                    <p className={`text-3xl font-bold tracking-tight ${m.text}`}>
+                                        {m.value}
+                                    </p>
+                                </div>
+                                <div className={`text-xl ${m.text}`}>{m.icon}</div>
+                            </div>
+                            <div className="text-sm uppercase text-zinc-500 text-right">
+                                {stats.totalItems > 0 && m.label !== "Items Totales" && m.label !== "Anviles"
+                                    ? `${Math.round((m.value / safeTotal) * 100)}%`
+                                    : ""}
+                            </div>
                         </div>
-                    </div>
+                    ))}
                 </div>
             </div>
+        </main>
     );
 }

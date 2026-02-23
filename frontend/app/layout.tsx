@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./provider";
-import PermissionsRefresher from "./components/PermissionRefresher";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -31,7 +30,6 @@ export default function RootLayout({
       </head>
       <body className={`${montserrat.className} antialiased`}>
         <Providers>
-          <PermissionsRefresher />
           {children}
         </Providers>
       </body>

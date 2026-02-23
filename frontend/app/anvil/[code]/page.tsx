@@ -223,7 +223,7 @@ export default function AnvilPage() {
     <div className="flex flex-col p-4 items-center justify-center h-screen w-screen">
       <BackButton />
       <NavBar />
-      <div className="rounded-lg p-4 bg-linear-to-tl from-zinc-900 to-zinc-800 ring ring-zinc-600 transition-all min-w-3xs">
+      <div className="p-4 bg-zinc-900/50 border border-zinc-800 rounded-xl transition-all min-w-3xs">
         <div className="flex flex-col mb-2">
           <div className="text-center border-b border-zinc-600 pb-2 mb-1">
             <h2 className="font-bold text-lg text-zinc-200">{data.anvil.name}</h2>
@@ -292,25 +292,25 @@ export default function AnvilPage() {
             <h3 className="text-sm mb-2 text-center text-zinc-400">Cambiar estado del anvil y su contenido</h3>
             <div className="grid grid-cols-2 gap-2 w-full">
               <button
-                className="rounded-md border border-zinc-700 py-2 text-sm text-zinc-200 hover:bg-zinc-800 transition-colors"
+                className="rounded-xl border border-zinc-800 py-2 text-sm text-zinc-200 hover:bg-zinc-800 transition-colors"
                 onClick={() => changeAnvilStatus("Guardado")}
               >
                 Guardado
               </button>
               <button
-                className="rounded-md border border-zinc-700 py-2 text-sm text-zinc-200 hover:bg-zinc-800 transition-colors"
+                className="rounded-xl border border-zinc-800 py-2 text-sm text-zinc-200 hover:bg-zinc-800 transition-colors"
                 onClick={() => changeAnvilStatus("En uso")}
               >
                 En uso
               </button>
               <button
-                className="rounded-md border border-zinc-700 py-2 text-sm text-zinc-200 hover:bg-zinc-800 transition-colors"
+                className="rounded-xl border border-zinc-800 py-2 text-sm text-zinc-200 hover:bg-zinc-800 transition-colors"
                 onClick={() => changeAnvilStatus("Enviado")}
               >
                 Enviado
               </button>
               <button
-                className="rounded-md border border-zinc-700 py-2 text-sm text-zinc-200 hover:bg-zinc-800 transition-colors"
+                className="rounded-xl border border-zinc-800 py-2 text-sm text-zinc-200 hover:bg-zinc-800 transition-colors"
                 onClick={() => changeAnvilStatus("Baja")}
               >
                 Baja
@@ -326,7 +326,7 @@ export default function AnvilPage() {
           </div>
           <button
             onClick={() => router.push(`/anvil/${code}/items`)}
-            className="w-full rounded-lg border border-zinc-700 bg-zinc-900/80 py-2 text-sm text-zinc-200 hover:bg-zinc-800 transition-colors"
+            className="w-full hover:bg-zinc-800 border border-zinc-800 rounded-xl active:scale-[0.98] py-2 text-sm text-zinc-200 transition-colors"
           >
             Ver contenido del anvil
           </button>

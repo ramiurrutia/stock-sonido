@@ -15,7 +15,7 @@ router.get("/stats", auth, checkPermission("admin.access"), async (req, res) => 
         -- Conteos por estado (Excluyendo Anvils)
         COUNT(CASE WHEN status = 'Guardado' AND category != 'Anvil' THEN 1 END) ::int as "guardados",
         COUNT(CASE WHEN status = 'Enviado' AND category != 'Anvil' THEN 1 END) ::int as "enviados",
-        COUNT(CASE WHEN status = 'En Uso' AND category != 'Anvil' THEN 1 END) ::int as "enUso",
+        COUNT(CASE WHEN lower(status) = 'en uso' AND category != 'Anvil' THEN 1 END) ::int as "enUso",
         COUNT(CASE WHEN status = 'Baja' AND category != 'Anvil' THEN 1 END) ::int as "baja",
         
         -- Total de Anvils (Suponiendo que se identifican por categoría)

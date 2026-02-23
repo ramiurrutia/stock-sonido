@@ -13,30 +13,40 @@ export default function AdminShortcuts() {
   if (!isAdmin) return null;
 
   return (
-    <>
-    <h3 className="mt-8 font-mono">Admin panel</h3>
-      <div className="grid grid-cols-2 gap-4 mt-2">
-        <Link href="/admin/logs">
-          <div className="flex items-center justify-center gap-2 p-3 bg-zinc-900/50 hover:bg-zinc-800 border border-zinc-800 hover:border-blue-500/50 rounded-lg transition-all group w-36">
-            <BsTerminal className="text-zinc-500 group-hover:text-blue-400" />
-            <span className="text-sm font-medium text-zinc-300 group-hover:text-white">Logs</span>
-          </div>
-        </Link>
-        <Link href="/admin/dashboard">
-          <div className="flex items-center justify-center gap-2 p-3 bg-zinc-900/50 hover:bg-zinc-800 border border-zinc-800 hover:border-emerald-500/50 rounded-lg transition-all group w-36">
-            <BsGraphUp className="text-zinc-500 group-hover:text-emerald-400" />
-            <span className="text-sm font-medium text-zinc-300 group-hover:text-white">Dashboard</span>
-          </div>
-        </Link>
-        <Link href="/admin/users">
-          <div className="flex items-center justify-center gap-2 p-3 bg-zinc-900/50 hover:bg-zinc-800 border border-zinc-800 hover:border-indigo-500/50 rounded-lg transition-all group w-36">
-            <HiOutlineUsers className="text-zinc-500 group-hover:text-indigo-400" />
-            <span className="text-sm font-medium text-zinc-300 group-hover:text-white">Usuarios</span>
-          </div>
-        </Link>
-        <div className="flex items-center justify-center gap-2 p-3 bg-zinc-900/50 border border-zinc-800 hover:border-indigo-500/50 rounded-lg transition-all group w-36 opacity-20">
-        <span className="text-sm">Próximamente</span></div>
+    <div className="w-full mt-8">
+      <div className="flex items-center gap-2 mb-3 px-1">
+        <span className="text-xs uppercase tracking-[0.15em] text-zinc-500">
+          Admin
+        </span>
+        <div className="h-px flex-1 bg-zinc-800/50" />
       </div>
-    </>
+
+      <div className="grid grid-cols-2 gap-2">
+        <Link href="/admin/logs" className="block">
+          <div className="flex items-center gap-3 p-3 bg-zinc-900/50 hover:bg-zinc-800/60 border border-zinc-800 rounded-xl transition-all group">
+            <BsTerminal className="text-lg text-zinc-500 group-hover:text-blue-400 group-active:text-blue-400 transition-colors" />
+            <span className="text-sm text-zinc-400 group-hover:text-zinc-100">Logs</span>
+          </div>
+        </Link>
+
+        <Link href="/admin/dashboard" className="block">
+          <div className="flex items-center gap-3 p-3 bg-zinc-900/50 hover:bg-zinc-800/60 border border-zinc-800 rounded-xl transition-all group">
+            <BsGraphUp className="text-lg text-zinc-500 group-hover:text-emerald-400 group-active:text-emerald-400 transition-colors" />
+            <span className="text-sm  text-zinc-400 group-hover:text-zinc-100">Dashboard</span>
+          </div>
+        </Link>
+
+        <Link href="/admin/users" className="block">
+          <div className="flex items-center gap-3 p-3 bg-zinc-900/50 hover:bg-zinc-800/60 border border-zinc-800 rounded-xl transition-all group">
+            <HiOutlineUsers className="text-lg text-zinc-500 group-hover:text-indigo-400 group-active:text-indigo-400 transition-colors" />
+            <span className="text-sm text-zinc-400 group-hover:text-zinc-100">Usuarios</span>
+          </div>
+        </Link>
+
+        <div className="flex items-center justify-center p-3 bg-zinc-900/10 border border-dashed border-zinc-800 rounded-xl opacity-30">
+           <span className="text-sm font-bold text-zinc-600">Proximamente</span>
+        </div>
+      </div>
+    </div>
   );
 }

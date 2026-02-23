@@ -5,6 +5,27 @@ import { auth } from "../middlewares/auth.js";
 
 const router = express.Router();
 
+router.get(
+  "/items",
+  async (req, res) => {
+    try {
+      const { rows } = await pool.query(
+        `
+        SELECT id, code, name, category, status, image_url, notes, created_at
+        FROM items
+        WHERE category != 'Anvil'
+        ORDER BY category DESC
+        `
+      );
+
+      res.json(rows);
+    } catch (error) {
+      console.error("Error fetching items:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+);
+
 router.put(
   "/items/:code/status",
   auth,
@@ -67,9 +88,17 @@ router.get(
         FROM items
         WHERE code ILIKE $1
            OR name ILIKE $1
-        LIMIT 5
+        ORDER BY
+          CASE
+            WHEN code ILIKE $2 THEN 0
+            WHEN name ILIKE $2 THEN 1
+            WHEN code ILIKE $1 THEN 2
+            ELSE 3
+          END,
+          name ASC
+        LIMIT 10
         `,
-        [`%${q}%`]
+        [`%${q}%`, `${q}%`]
       );
 
       res.json(rows);

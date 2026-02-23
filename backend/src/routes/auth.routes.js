@@ -16,17 +16,15 @@ const authenticateToken = (req, res, next) => {
     if (err) {
       return res.status(403).json({ error: 'Token inválido' });
     }
-    req.userId = decoded.userId; // ✅ Cambiar decoded.id por decoded.userId
+    req.userId = decoded.userId;
     next();
   });
 };
 
-// Endpoint para obtener permisos actualizados
 router.get("/auth/me", authenticateToken, async (req, res) => {
   try {
     const userId = req.userId;
 
-    // Obtener permisos del usuario
      const result = await pool.query(
       `SELECT u.id, u.username, u.email, 
               array_agg(DISTINCT p.code) as permissions
@@ -122,7 +120,7 @@ router.post("/auth/google", async (req, res) => {
         permissions,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "7d" },
+      { expiresIn: "14d" },
     );
 
     return res.json({

@@ -158,14 +158,15 @@ export default function ItemPage() {
             <BackButton />
             <NavBar />
             <div className="">
-                <div className="flex flex-col rounded-lg p-4 bg-linear-to-tl from-zinc-900 to-zinc-800 ring ring-zinc-600 mb-4">
+                <div className="flex flex-col p-4 bg-zinc-900/50 border border-zinc-800 rounded-xl mb-4 min-w-80">
                     {data.image_url ? (
                         <div className="flex w-full h-full justify-center items-center">
                             <Image src={`${process.env.NEXT_PUBLIC_API_URL}${data.image_url}`} alt={data.name} className="rounded-lg" width={250} height={250} />
-
                         </div>
                     ) : (
-                        <p className="text-center">Imagen no encontrada</p>
+                        <div className="flex w-full h-48 bg-zinc-800 rounded-lg justify-center items-center">
+                            <p className="text-zinc-500">No hay imagen</p>
+                        </div>
                     )}
                     <div className="text-center border-b border-zinc-600 p-2 mb-1">
                         <h2 className="font-bold text-lg text-zinc-200">{data.name}</h2>
@@ -183,8 +184,7 @@ export default function ItemPage() {
                     </div>
 
                     {data.anvil && (
-                        <div className="mt-3 p-3 border border-zinc-600 rounded-lg bg-zinc-900">
-                            <h3 className="text-xs text-zinc-400">Anvil asignado</h3>
+                        <div className="mt-3 p-3 bg-zinc-900/50 border border-zinc-800 rounded-xl">
                             <p className="font-semibold text-sm text-zinc-200">{data.anvil.name} <span className="text-sm text-zinc-400">| {data.anvil.code}</span></p>
 
                             <div className="flex gap-2 mt-2 items-center">

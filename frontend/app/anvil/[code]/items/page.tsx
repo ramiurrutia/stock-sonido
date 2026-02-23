@@ -136,7 +136,7 @@ export default function AnvilItemsPage() {
     <div className="flex flex-col p-4 items-center justify-center">
       <BackButton />
       <NavBar />
-      <div className="rounded-lg p-4 bg-linear-to-tl from-zinc-900 to-zinc-800 ring ring-zinc-600 transition-all min-w-3xs mt-22">
+      <div className="p-4 bg-zinc-900/50 border border-zinc-800 rounded-xl transition-all min-w-3xs mt-22">
         <div className="text-center border-b border-zinc-600 pb-2 mb-3">
           <h2 className="font-bold text-lg text-zinc-200">{data.anvil.name}</h2>
           <p className="font-medium text-sm text-zinc-400 tracking-wider">{data.anvil.code}</p>
@@ -146,7 +146,7 @@ export default function AnvilItemsPage() {
         <div className="grid grid-cols-2 gap-2">
           {data.items.length === 0 && <p className="text-zinc-500 text-center">Este anvil no tiene items.</p>}
           {data.items.map((item) => (
-            <div key={item.id} className="border border-zinc-700 rounded-lg p-2 flex justify-between items-center">
+            <div key={item.id} className="bg-zinc-900/50 hover:bg-zinc-800/60 border border-zinc-800 rounded-xl active:scale-[0.98] p-2 flex justify-between items-center">
               <div>
                 <h3
                   className="flex flex-row items-center underline underline-offset-2 cursor-pointer text-sm w-32 truncate"

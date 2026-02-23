@@ -11,7 +11,7 @@ export function StatusButton({ currentStatus, newButtonStatus, onClick }: { curr
     if (isActive) {
         styleButton = "text-zinc-700 bg-zinc-900/80"
     } else {
-        styleButton = "text-zinc-200 bg-linear-to-tl from-zinc-900 to-zinc-800 hover:bg-zinc-50/10 active:bg-zinc-100/15 ring ring-zinc-600"
+        styleButton = "text-zinc-200 bg-zinc-900/50 hover:bg-zinc-800/60 border border-zinc-800 active:scale-[0.98]"
     }
 
     switch (newButtonStatus) {
@@ -44,7 +44,7 @@ export function StatusButton({ currentStatus, newButtonStatus, onClick }: { curr
         } else {
             onClick()
         }
-    }} className={`text-sm min-h-22 min-w-22 flex flex-col items-center justify-center rounded-lg transition-all ${styleButton}`}>
+    }} className={`text-sm min-h-22 min-w-22 flex flex-col items-center justify-center rounded-xl transition-all ${styleButton}`}>
         {statusSVG}{newButtonStatus}
     </button>
 }
