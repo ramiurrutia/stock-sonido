@@ -2,15 +2,16 @@
 
 import Loading from "@/app/loading";
 import axios from "axios";
-import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import Image from "next/image";
 import StatusBadge from "../../components/ui/StatusBadge";
 import ItemsActions from "./components/itemsActions";
 import BackButton from "@/app/components/navbar/backButton";
 import NavBar from "@/app/components/navbar/navBar";
 import Swal from "sweetalert2";
 import { useSession } from "next-auth/react";
+import { RiSendPlaneLine } from "react-icons/ri";
 
 interface ItemData {
     id: number;
@@ -21,6 +22,7 @@ interface ItemData {
     image_url: string | null;
     notes: string | null;
     created_at: string;
+    destination: string | null;
     anvil: {
         id: number;
         code: string;
@@ -154,7 +156,7 @@ export default function ItemPage() {
     </main>)
 
     return (
-        <main className="flex flex-col items-center justify-center p-4 h-screen w-screen">
+        <main className="flex flex-col items-center p-4 pt-20 pb-6 min-h-screen w-full overflow-y-auto">
             <BackButton />
             <NavBar />
             <div className="">
@@ -178,9 +180,12 @@ export default function ItemPage() {
                     </div>
                     <div className="flex flex-row justify-between items-center mt-2">
                         <h3 className="text-sm text-zinc-400">Estado</h3>
-                        <p>
+                        <div className="flex items-center gap-2">
                             <StatusBadge status={data.status} />
-                        </p>
+                            {data.status === "Enviado" && data.destination && (
+                                <span className="text-sm text-zinc-200 flex flex-row items-center justify-center gap-1"><RiSendPlaneLine /> {data.destination}</span>
+                            )}
+                        </div>
                     </div>
 
                     {data.anvil && (

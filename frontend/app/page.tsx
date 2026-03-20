@@ -28,7 +28,7 @@ export default function Home() {
           <button
             onClick={() => router.push('/scan')}
             className="col-span-2 flex items-center justify-between p-5 rounded-xl 
-                       bg-zinc-100 text-zinc-900 active:scale-[0.98] transition-transform"
+                       bg-white text-zinc-900 active:scale-[0.98] transition-transform"
           >
             <div className="flex flex-col items-start">
               <span className="text-xl font-semibold">Escanear</span>
@@ -41,7 +41,7 @@ export default function Home() {
             onClick={() => router.push('/item')}
             className="flex flex-col items-start p-5 bg-zinc-900/50 hover:bg-zinc-800/60 border border-zinc-800 rounded-xl active:scale-[0.98]"
           >
-            <HiOutlineQueueList className="text-2xl mb-2 text-zinc-400" />
+            <HiOutlineQueueList className="text-2xl mb-1 text-zinc-400" />
             <span className="font-semibold">Items</span>
           </button>
 
@@ -49,7 +49,7 @@ export default function Home() {
             onClick={() => router.push('/anvil')}
             className="flex flex-col items-start p-5 bg-zinc-900/50 hover:bg-zinc-800/60 border border-zinc-800 rounded-xl active:scale-[0.98]"
           >
-            <HiOutlineArchiveBox className="text-2xl mb-2 text-zinc-400" />
+            <HiOutlineArchiveBox className="text-2xl mb-1 text-zinc-400" />
             <span className="font-semibold">Anviles</span>
           </button>
         </div>

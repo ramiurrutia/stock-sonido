@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'stock-sonido-production.up.railway.app',
         pathname: '/assets/**',
-      },
+      }
     ],
   },
 };

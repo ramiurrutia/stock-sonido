@@ -20,6 +20,18 @@ router.get("/anvils/:code", async (req, res) => {
 
     const anvil = anvilCheck.rows[0];
 
+    const shipmentResult = await pool.query(
+      `
+      SELECT s.destination
+      FROM shipment_items si
+      JOIN shipments s ON s.id = si.shipment_id
+      WHERE si.item_id = $1
+      ORDER BY s.sent_at DESC, s.id DESC
+      LIMIT 1
+      `,
+      [anvil.id],
+    );
+
     const itemsResult = await pool.query(
       `SELECT 
         i.id,
@@ -47,6 +59,7 @@ router.get("/anvils/:code", async (req, res) => {
         status: anvil.status,
         image_url: anvil.image_url,
         notes: anvil.notes,
+        destination: shipmentResult.rows[0]?.destination || null,
         created_at: anvil.created_at,
       },
       items: itemsResult.rows,
@@ -143,12 +156,16 @@ router.delete("/anvils/:anvilId/items/:itemId", auth, checkPermission("anvil.rem
 
 router.put("/anvils/:code/status", auth, checkPermission("item.change_status"), async (req, res) => {
   const { code } = req.params;
-  const { status: newStatus } = req.body;
+  const { status: newStatus, destination } = req.body;
   const userName = req.user.name;
   const validStatuses = ["Guardado", "En uso", "Enviado", "Baja"];
 
   if (!validStatuses.includes(newStatus)) {
     return res.status(400).json({ error: "Invalid status" });
+  }
+
+  if (newStatus === "Enviado" && (!destination || !String(destination).trim())) {
+    return res.status(400).json({ error: "Destino requerido para estado Enviado" });
   }
 
   const client = await pool.connect();
@@ -182,6 +199,7 @@ router.put("/anvils/:code/status", auth, checkPermission("item.change_status"), 
 
     const targets = [anvil, ...anvilItemsResult.rows];
     let updatedCount = 0;
+    const changedTargets = [];
 
     for (const target of targets) {
       const previousStatus = target.status;
@@ -195,12 +213,34 @@ router.put("/anvils/:code/status", auth, checkPermission("item.change_status"), 
       );
 
       await client.query(
-        `INSERT INTO movements (item_id, anvil_id, action, previous_status, new_status, user_name)
-         VALUES ($1, $2, 'status_change', $3, $4, $5)`,
-        [target.id, anvil.id, previousStatus, newStatus, userName],
+        `INSERT INTO movements (item_id, anvil_id, action, previous_status, new_status, user_name, notes)
+         VALUES ($1, $2, 'status_change', $3, $4, $5, $6)`,
+        [target.id, anvil.id, previousStatus, newStatus, userName, newStatus === "Enviado" ? `Enviado a: ${destination}` : null],
       );
 
+      changedTargets.push(target);
       updatedCount += 1;
+    }
+
+    if (newStatus === "Enviado" && changedTargets.length > 0) {
+      const shipmentResult = await client.query(
+        `
+        INSERT INTO shipments (destination, contact_name, contact_phone, notes)
+        VALUES ($1, NULL, NULL, $2)
+        RETURNING id
+        `,
+        [destination, `Generado por cambio de estado de anvil ${code}`]
+      );
+
+      for (const target of changedTargets) {
+        await client.query(
+          `
+          INSERT INTO shipment_items (shipment_id, item_id, quantity, notes)
+          VALUES ($1, $2, 1, $3)
+          `,
+          [shipmentResult.rows[0].id, target.id, `Origen anvil ${code}`]
+        );
+      }
     }
 
     await client.query("COMMIT");

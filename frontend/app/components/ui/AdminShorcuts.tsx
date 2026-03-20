@@ -24,22 +24,22 @@ export default function AdminShortcuts() {
       <div className="grid grid-cols-2 gap-2">
         <Link href="/admin/logs" className="block">
           <div className="flex items-center gap-3 p-3 bg-zinc-900/50 hover:bg-zinc-800/60 border border-zinc-800 rounded-xl transition-all group">
-            <BsTerminal className="text-lg text-zinc-500 group-hover:text-blue-400 group-active:text-blue-400 transition-colors" />
-            <span className="text-sm text-zinc-400 group-hover:text-zinc-100">Logs</span>
+            <BsTerminal className="text-lg text-zinc-300 group-hover:text-blue-400 group-active:text-blue-400 transition-colors" />
+            <span className="text-sm text-zinc-300 group-hover:text-zinc-100">Logs</span>
           </div>
         </Link>
 
         <Link href="/admin/dashboard" className="block">
           <div className="flex items-center gap-3 p-3 bg-zinc-900/50 hover:bg-zinc-800/60 border border-zinc-800 rounded-xl transition-all group">
-            <BsGraphUp className="text-lg text-zinc-500 group-hover:text-emerald-400 group-active:text-emerald-400 transition-colors" />
-            <span className="text-sm  text-zinc-400 group-hover:text-zinc-100">Dashboard</span>
+            <BsGraphUp className="text-lg text-zinc-300 group-hover:text-emerald-400 group-active:text-emerald-400 transition-colors" />
+            <span className="text-sm  text-zinc-300 group-hover:text-zinc-100">Dashboard</span>
           </div>
         </Link>
 
         <Link href="/admin/users" className="block">
           <div className="flex items-center gap-3 p-3 bg-zinc-900/50 hover:bg-zinc-800/60 border border-zinc-800 rounded-xl transition-all group">
-            <HiOutlineUsers className="text-lg text-zinc-500 group-hover:text-indigo-400 group-active:text-indigo-400 transition-colors" />
-            <span className="text-sm text-zinc-400 group-hover:text-zinc-100">Usuarios</span>
+            <HiOutlineUsers className="text-lg text-zinc-300 group-hover:text-indigo-400 group-active:text-indigo-400 transition-colors" />
+            <span className="text-sm text-zinc-300 group-hover:text-zinc-100">Usuarios</span>
           </div>
         </Link>
 

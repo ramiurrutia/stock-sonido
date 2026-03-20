@@ -1,6 +1,7 @@
 import BackButton from "../components/navbar/backButton";
 import Link from "next/link";
 import { HiOutlineChevronRight } from "react-icons/hi2";
+import CreateItemButton from "./components/CreateItemButton";
 
 interface Item {
   id: number;
@@ -52,21 +53,19 @@ export default async function ItemsPage() {
     <main className="text-zinc-200 flex flex-col p-4 pb-20">
       <div className="w-full max-w-4xl mx-auto my-10">
 
-        {/* Header Principal */}
         <div className="flex items-center justify-between mb-10 px-1">
           <div className="flex items-center gap-3">
             <BackButton />
             <h1 className="text-2xl font-bold text-white tracking-tight">Inventario</h1>
+            <span className="text-xs font-black bg-zinc-900 border border-zinc-800 px-2 py-1 rounded-md text-zinc-500 uppercase">
+              Total: {items.length}
+            </span>
           </div>
-          <span className="text-[10px] font-black bg-zinc-900 border border-zinc-800 px-2 py-1 rounded-md text-zinc-500 uppercase">
-            Total: {items.length}
-          </span>
+          <CreateItemButton />
         </div>
 
-        {/* Mapeo de Categorías */}
         {sortedCategories.map((category) => (
           <section key={category} className="mb-10">
-            {/* Divisor de Categoría */}
             <div className="flex items-center gap-3 mb-5 px-1">
               <span className="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-500">
                 {category}
@@ -77,7 +76,6 @@ export default async function ItemsPage() {
               </span>
             </div>
 
-            {/* Grid de Items */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {groupedItems[category].map((item) => (
                 <Link
@@ -97,8 +95,8 @@ export default async function ItemsPage() {
                       {item.name}
                     </h2>
                   </div>
-                  <HiOutlineChevronRight 
-                    className="absolute bottom-4 right-3 text-zinc-700 group-hover:text-zinc-400 group-hover:translate-x-0.5 transition-all text-sm" 
+                  <HiOutlineChevronRight
+                    className="absolute bottom-4 right-3 text-zinc-700 group-hover:text-zinc-400 group-hover:translate-x-0.5 transition-all text-sm"
                   />
                 </Link>
               ))}

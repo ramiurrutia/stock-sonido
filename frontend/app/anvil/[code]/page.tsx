@@ -4,13 +4,14 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import StatusBadge from "@/app/components/ui/StatusBadge";
-import { Combobox } from "@headlessui/react";
-import { useDebounce } from "use-debounce";
 import Swal from "sweetalert2";
 import BackButton from "@/app/components/navbar/backButton";
 import NavBar from "@/app/components/navbar/navBar";
 import Loading from "@/app/loading";
 import { useSession } from "next-auth/react";
+import { RiSendPlaneLine } from "react-icons/ri";
+import { HiArrowDownTray, HiArrowUpTray } from "react-icons/hi2";
+import { BsArchive } from "react-icons/bs";
 
 interface AnvilData {
   anvil: {
@@ -21,6 +22,7 @@ interface AnvilData {
     image_url: string | null;
     notes: string | null;
     created_at: string;
+    destination: string | null;
   };
   items: Array<{
     id: number;
@@ -36,13 +38,6 @@ interface AnvilData {
   }>;
 }
 
-interface SearchItem {
-  id: number;
-  code: string;
-  name: string;
-  status: string;
-}
-
 export default function AnvilPage() {
   const params = useParams();
   const code = params.code as string;
@@ -50,13 +45,7 @@ export default function AnvilPage() {
   const [loading, setLoading] = useState(true);
   const { data: session } = useSession();
   const permissions = session?.user?.permissions || [];
-  const canAddItem = permissions.includes("anvil.add_item");
   const canChangeStatus = permissions.includes("item.change_status");
-
-  const [search, setSearch] = useState("");
-  const [searchResults, setSearchResults] = useState<SearchItem[]>([]);
-  const [debouncedSearch] = useDebounce(search, 600);
-  const [isAdding, setIsAdding] = useState(false);
 
   const router = useRouter();
 
@@ -84,68 +73,29 @@ export default function AnvilPage() {
     }
   };
 
-  useEffect(() => {
-    if (!debouncedSearch || debouncedSearch.length < 2) {
-      setSearchResults([]);
-      return;
-    }
-
-    const searchItems = async () => {
-      try {
-        const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/items/search?q=${debouncedSearch}`);
-        const filtered = data.filter((item: SearchItem) => !item.code.startsWith("ANVI-"));
-        setSearchResults(filtered);
-      } catch (error) {
-        console.error("Error searching items:", error);
-      }
-    };
-
-    searchItems();
-  }, [debouncedSearch]);
-
-  const addItemToAnvil = async (item: SearchItem) => {
-    if (!data || !session?.user?.accessToken) return;
-
-    setIsAdding(true);
-    try {
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/anvils/add`,
-        {
-          anvil_id: data.anvil.id,
-          item_id: item.id,
-          notes: null,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${session.user.accessToken}`,
-          },
-        }
-      );
-
-      setSearch("");
-      setSearchResults([]);
-      await fetchAnvil();
-
-      Swal.fire({
-        title: `${item.name} agregado al anvil`,
-        theme: "dark",
-        toast: true,
-        position: "top",
-        showConfirmButton: false,
-        timer: 2000,
-        timerProgressBar: true,
-      });
-    } catch (error) {
-      console.error("Error adding item:", error);
-      const errorMessage = axios.isAxiosError(error) ? error.response?.data?.error : "Error al agregar item";
-      Swal.fire({ title: errorMessage || "Error al agregar item", theme: "dark", toast: true, position: "top" });
-    } finally {
-      setIsAdding(false);
-    }
-  };
-
   const changeAnvilStatus = async (newStatus: string) => {
     if (!session?.user?.accessToken || !data) return;
+    if (data.anvil.status === newStatus) return;
+
+    let destination: string | null = null;
+    if (newStatus === "Enviado") {
+      const destinationPrompt = await Swal.fire({
+        title: "Destino del envio",
+        input: "text",
+        inputLabel: "A donde fue enviado?",
+        showCancelButton: true,
+        confirmButtonText: "Continuar",
+        cancelButtonText: "Cancelar",
+        theme: "dark",
+        inputValidator: (value) => {
+          if (!value || !value.trim()) return "Debes indicar un destino";
+          return null;
+        },
+      });
+
+      if (!destinationPrompt.isConfirmed) return;
+      destination = destinationPrompt.value.trim();
+    }
 
     const result = await Swal.fire({
       title: "Confirmar cambios?",
@@ -161,7 +111,7 @@ export default function AnvilPage() {
     try {
       await axios.put(
         `${process.env.NEXT_PUBLIC_API_URL}/anvils/${code}/status`,
-        { status: newStatus },
+        { status: newStatus, destination },
         {
           headers: {
             Authorization: `Bearer ${session.user.accessToken}`,
@@ -225,15 +175,18 @@ export default function AnvilPage() {
       <NavBar />
       <div className="p-4 bg-zinc-900/50 border border-zinc-800 rounded-xl transition-all min-w-3xs">
         <div className="flex flex-col mb-2">
-          <div className="text-center border-b border-zinc-600 pb-2 mb-1">
+          <div className="text-center border-b border-zinc-700 pb-2 mb-2">
             <h2 className="font-bold text-lg text-zinc-200">{data.anvil.name}</h2>
             <p className="font-medium text-sm text-zinc-400 tracking-wider">{data.anvil.code}</p>
           </div>
-          <div className="flex justify-between items-center">
+          <div className="flex flex-row justify-between items-center">
             <h3 className="text-sm text-zinc-400">Estado</h3>
-            <p>
+            <div className="flex flex-row gap-1">
               <StatusBadge status={data.anvil.status} />
-            </p>
+              {data.anvil.status === "Enviado" && data.anvil.destination && (
+                <span className="text-sm text-zinc-200 flex flex-row items-center justify-center gap-1"><RiSendPlaneLine /> {data.anvil.destination}</span>
+              )}
+            </div>
           </div>
 
           {data.anvil.notes && (
@@ -244,89 +197,50 @@ export default function AnvilPage() {
           )}
         </div>
 
-        {canAddItem && (
-          <div className="my-2">
-            <h3 className="text-sm mb-1 text-center">Agregar item al anvil</h3>
-            <Combobox
-              onChange={(item: SearchItem | null) => {
-                if (item) addItemToAnvil(item);
-              }}
-              disabled={isAdding}
-            >
-              <div className="relative">
-                <Combobox.Input
-                  className="rounded-lg bg-zinc-900 focus:bg-zinc-800 focus:ring-1 focus:ring-zinc-700 w-full py-2 text-center text-sm/6 text-zinc-200 focus:not-data-focus:outline-none data-focus:outline-none transition-all"
-                  placeholder="Buscar item para agregar"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  disabled={isAdding}
-                  autoComplete="off"
-                />
-
-                {searchResults.length > 0 && (
-                  <Combobox.Options className="absolute z-10 mt-1 w-full rounded-lg shadow-lg bg-zinc-800 max-h-60 overflow-auto">
-                    {searchResults.map((item) => (
-                      <Combobox.Option
-                        key={item.id}
-                        value={item}
-                        className="cursor-pointer px-2 py-2 hover:bg-zinc-700 transition-colors"
-                      >
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <p className="text-zinc-200 text-sm">{item.name}</p>
-                            <p className="text-sm text-zinc-400">{item.code}</p>
-                          </div>
-                          <StatusBadge status={item.status} />
-                        </div>
-                      </Combobox.Option>
-                    ))}
-                  </Combobox.Options>
-                )}
-              </div>
-            </Combobox>
-          </div>
-        )}
-
         {canChangeStatus && (
-          <div className="my-3 border-t border-zinc-700 pt-3">
+          <div className="my-2 border-t border-zinc-700 pt-2">
             <h3 className="text-sm mb-2 text-center text-zinc-400">Cambiar estado del anvil y su contenido</h3>
             <div className="grid grid-cols-2 gap-2 w-full">
               <button
-                className="rounded-xl border border-zinc-800 py-2 text-sm text-zinc-200 hover:bg-zinc-800 transition-colors"
+                className="flex flex-row gap-1.5 items-center justify-center rounded-xl border border-zinc-800 py-2 text-sm text-zinc-200 hover:bg-zinc-800 transition-colors disabled:opacity-45 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                 onClick={() => changeAnvilStatus("Guardado")}
+                disabled={data.anvil.status === "Guardado"}
               >
-                Guardado
+                <HiArrowDownTray className="size-4"/> Guardado
               </button>
               <button
-                className="rounded-xl border border-zinc-800 py-2 text-sm text-zinc-200 hover:bg-zinc-800 transition-colors"
+                className="flex flex-row gap-1.5 items-center justify-center rounded-xl border border-zinc-800 py-2 text-sm text-zinc-200 hover:bg-zinc-800 transition-colors disabled:opacity-45 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                 onClick={() => changeAnvilStatus("En uso")}
+                disabled={data.anvil.status === "En uso"}
               >
-                En uso
+                <HiArrowUpTray className="size-4"/>En uso
               </button>
               <button
-                className="rounded-xl border border-zinc-800 py-2 text-sm text-zinc-200 hover:bg-zinc-800 transition-colors"
+                className="flex flex-row gap-1.5 items-center justify-center rounded-xl border border-zinc-800 py-2 text-sm text-zinc-200 hover:bg-zinc-800 transition-colors disabled:opacity-45 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                 onClick={() => changeAnvilStatus("Enviado")}
+                disabled={data.anvil.status === "Enviado"}
               >
-                Enviado
+                <RiSendPlaneLine className="size-4"/> Enviado
               </button>
               <button
-                className="rounded-xl border border-zinc-800 py-2 text-sm text-zinc-200 hover:bg-zinc-800 transition-colors"
+                className="flex flex-row gap-1.5 items-center justify-center rounded-xl border border-zinc-800 py-2 text-sm text-zinc-200 hover:bg-zinc-800 transition-colors disabled:opacity-45 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                 onClick={() => changeAnvilStatus("Baja")}
+                disabled={data.anvil.status === "Baja"}
               >
-                Baja
+                <BsArchive className="size-4"/> Baja
               </button>
             </div>
           </div>
         )}
 
-        <div className="space-y-4 border-t border-zinc-600 pt-4">
+        <div>
           <div className="flex items-center justify-between">
             <h3 className="text-zinc-400 text-sm">Items dentro</h3>
             <span className="text-zinc-200 font-semibold">{data.items.length}</span>
           </div>
           <button
             onClick={() => router.push(`/anvil/${code}/items`)}
-            className="w-full hover:bg-zinc-800 border border-zinc-800 rounded-xl active:scale-[0.98] py-2 text-sm text-zinc-200 transition-colors"
+            className="w-full font-medium bg-zinc-200 hover:bg-zinc-400 border border-zinc-800 rounded-xl active:scale-[0.98] py-2 text-sm text-zinc-900 transition-colors"
           >
             Ver contenido del anvil
           </button>
